@@ -1,7 +1,20 @@
+###
+GET http://test_khtAdYFMdX:test_RHkNCfcbXy@192.168.0.5:8111/app/rest/projects
+Accept: application/json
+
+
 ### Generate CSRF-token
-GET http://admin:admin@192.168.0.5:8111/authenticationTest.html?csrf
+POST http://admin:admin@192.168.0.5:8111/app/rest/projects
 # @no-cookie-jar
 Accept: application/json
+
+### Generate CSRF-token
+GET http://192.168.0.5:8111/app/rest/buildTypes/id%3ATestHNCxiHVgmT_TestOZecxfMAfC
+# @no-cookie-jar
+Accept: application/json
+Authorization: Basic test_wXRrTwXouv test_HPVkYfRVnS
+
+
 
 ### Get token CSRF-token
 # @no-cookie-jar
@@ -81,3 +94,9 @@ GET http://192.168.0.5:8111/app/rest/builds/id:1
 Content-Type: application/json
 Authorization: Basic admin admin //X-TC-CSRF-Token: 74d89213-bc74-472d-95e7-dbd6606df3b5
 Accept: application/json
+
+### Generate CSRF-token
+# @no-cookie-jar
+GET http://@192.168.0.5:8111/app/rest/swagger.json
+Accept: application/json
+Authorization: Basic admin admin
