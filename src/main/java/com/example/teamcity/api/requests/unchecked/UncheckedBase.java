@@ -27,7 +27,7 @@ public class UncheckedBase extends Request implements CrudInterface {
         return RestAssured
                 .given()
                 .spec(spec)
-                .get(endpoint.getUrl() + "id:" + id);
+                .get(endpoint.getUrl() + "/id:" + id);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class UncheckedBase extends Request implements CrudInterface {
                 .given()
                 .spec(spec)
                 .body(model)
-                .put(endpoint.getUrl() + "id:" + id);
+                .put(endpoint.getUrl() + "/id:" + id);
     }
 
     @Override
@@ -44,6 +44,6 @@ public class UncheckedBase extends Request implements CrudInterface {
         return RestAssured
                 .given()
                 .spec(spec)
-                .delete(endpoint.getUrl() + "id:" + id);
+                .delete(endpoint.getUrl() + "/id:" + id);
     }
 }
