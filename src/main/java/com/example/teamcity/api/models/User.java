@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class User extends BaseModel{
-
+public class User extends BaseModel {
     @Random
     private String username;
     @Random
     private String password;
+    private Roles roles;
 }
