@@ -1,12 +1,16 @@
-###
-GET http://test_khtAdYFMdX:test_RHkNCfcbXy@192.168.0.5:8111/app/rest/projects
-Accept: application/json
+### Constants
+@host = 192.168.0.5
+@port = 8111
+@user= admin
+@password = admin
 
+### Hardcoded test data
+@projectId = test_project_1
+@buildTypeId = test_build_type_1
 
-### Generate CSRF-token
-POST http://admin:admin@192.168.0.5:8111/app/rest/projects
+### Get token CSRF-token
 # @no-cookie-jar
-Accept: application/json
+GET http://admin:admin@192.168.0.5:8111/login.html
 
 ### Generate CSRF-token
 GET http://192.168.0.5:8111/app/rest/buildTypes/id%3ATestHNCxiHVgmT_TestOZecxfMAfC
@@ -14,45 +18,37 @@ GET http://192.168.0.5:8111/app/rest/buildTypes/id%3ATestHNCxiHVgmT_TestOZecxfMA
 Accept: application/json
 Authorization: Basic test_wXRrTwXouv test_HPVkYfRVnS
 
-
-
-### Get token CSRF-token
+### 1. Create project
 # @no-cookie-jar
-GET http://admin:admin@192.168.0.5:8111/login.html
-
-### Create project
-# @no-cookie-jar
-POST http://192.168.0.5:8111/app/rest/projects
+POST http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/projects
 Content-Type: application/json
 Accept: application/json
-X-TC-CSRF-Token: 120dfc6c-4847-42c7-99fa-90c5e1104a5b
 
 {
   "parentProject": {
     "locator": "_Root"
   },
-  "name": "name",
-  "id": "id",
+  "name": "{{projectId}}",
+  "id": "{{projectId}}",
   "copyAllAssociatedSettings": true
 }
 
-### Create build configuration
+### 2. Create build configuration
 # @no-cookie-jar
-POST http://192.168.0.5:8111/app/rest/buildTypes
+POST http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/buildTypes
 Content-Type: application/json
-Authorization: Basic admin admin //X-TC-CSRF-Token: 74d89213-bc74-472d-95e7-dbd6606df3b5
 Accept: application/json
 
 {
-  "id": "id",
-  "name": "Print hello world!",
+  "id": "{{buildTypeId}}",
+  "name": "Print hello world",
   "project": {
-    "id": "id"
+    "id": "{{projectId}}"
   },
   "steps": {
     "step": [
       {
-        "name": "Print hello world!",
+        "name": "Print hello world",
         "type": "simpleRunner",
         "properties": {
           "property": [
@@ -75,28 +71,27 @@ Accept: application/json
   }
 }
 
-### Run build
+### 3. Run build
 # @no-cookie-jar
-POST http://192.168.0.5:8111/app/rest/buildQueue
+POST http://{{user}}:{{password}}@{{host}}:{{port}}/app/rest/buildQueue
 Content-Type: application/json
-Authorization: Basic admin admin //X-TC-CSRF-Token: 74d89213-bc74-472d-95e7-dbd6606df3b5
 Accept: application/json
 
 {
   "buildType": {
-    "id": "id"
+    "id": "{{buildTypeId}}"
   }
 }
 
-### Check build status
+### 4. Check build status
 # @no-cookie-jar
-GET http://192.168.0.5:8111/app/rest/builds/id:1
+GET http://{{host}}:{{port}}/app/rest/builds/id:1
 Content-Type: application/json
 Authorization: Basic admin admin //X-TC-CSRF-Token: 74d89213-bc74-472d-95e7-dbd6606df3b5
 Accept: application/json
 
-### Generate CSRF-token
+### 5. Generate CSRF-token
 # @no-cookie-jar
-GET http://@192.168.0.5:8111/app/rest/swagger.json
+GET http://@{{host}}:{{port}}/app/rest/swagger.json
 Accept: application/json
 Authorization: Basic admin admin
