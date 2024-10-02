@@ -4,7 +4,11 @@ import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.models.User;
 import com.example.teamcity.api.requests.CheckedRequests;
+import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -39,6 +43,20 @@ public class BuildTypeTest extends BaseApiTest{
 
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
     public void userCreatesTwoBuildTypeWithTheSameIdTest(){
+        var user = generate(User.class);
+        superUserCheckRequests.getRequest(USERS).create(user);
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(user));
+        var project = generate(Project.class);
+        project = userCheckRequests.<Project>getRequest(PROJECTS).create(project);
+        var buildType1 = generate(Arrays.asList(project), BuildType.class);
+        var buildType2 = generate(Arrays.asList(project), BuildType.class, buildType1.getId());
+        userCheckRequests.getRequest(BUILD_TYPES).create(buildType1);
+        new UncheckedBase(Specifications.authSpec(user), BUILD_TYPES)
+                .create(buildType2)
+                        .then()
+                .assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template\n".formatted(buildType1.getId())));
+
 
         step("Create user");
         step("Create project by user");
