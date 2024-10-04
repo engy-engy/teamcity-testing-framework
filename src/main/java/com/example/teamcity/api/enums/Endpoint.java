@@ -7,6 +7,9 @@ import com.example.teamcity.api.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Перечисление связывает каждый эндпоинт с соответствующей моделью данных.
+ */
 @AllArgsConstructor
 @Getter
 public enum Endpoint {

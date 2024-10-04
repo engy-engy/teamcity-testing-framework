@@ -9,6 +9,12 @@ import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
+
+/**
+ * Класс нужен для того, чтобы выполнять запросы к API с проверкой успешности этих запросов (валидных HTTP-ответов).
+ * Также сохраняет данные созданных сущностей, что упрощает управление тестовыми данными.
+ * @param <T>
+ */
 @SuppressWarnings("unchecked")
 public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface {
 
@@ -19,6 +25,12 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
         this.unchekedBase = new UncheckedBase(spec,endpoint);
     }
 
+    /**
+     * Создает новую сущность, проверяет, что запрос завершился успешно (код 200),
+     * и сохраняет созданную сущность в TestDataStorage
+     * @param model
+     * @return
+     */
     @Override
     public T create(BaseModel model) {
         var createdModel = (T) unchekedBase

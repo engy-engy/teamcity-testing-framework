@@ -39,6 +39,20 @@ public class TestDataGenerator {
      * параметром generatedModels при генерации BuildType, он будет переиспользоваться при установке
      * поля NewProjectDescription project, вместо генерации нового.
      */
+
+    /**
+     * Отвечает за генерацию тестовых данных на основе классов моделей (BaseModel). Его основной функционал:
+     *
+     * 	•	Генерация случайных данных для полей моделей.
+     * 	•	Поддержка параметризуемых полей через аннотацию @Parameterizable.
+     * 	•	Обработка списков (коллекций) объектов, которые могут быть наследниками BaseModel.
+     * 	•	Рекурсивная генерация объектов, если у них есть поля, которые также являются моделями данных.
+     * @param generatedModels
+     * @param generatorClass
+     * @param parameters
+     * @return
+     * @param <T>
+     */
     public static <T extends BaseModel> T generate(List<BaseModel> generatedModels, Class<T> generatorClass,
                                                    Object... parameters) {
         try {

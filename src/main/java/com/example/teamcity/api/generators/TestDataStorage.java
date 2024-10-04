@@ -10,6 +10,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Управляет хранилищем сгенерированных данных, чтобы отслеживать созданные в ходе тестов сущности.
+ * Помогает управлять жизненным циклом тестовых данных (например, создавать, удалять сущности после завершения тестов).
+ */
 public class TestDataStorage {
 
     private static TestDataStorage testDataStorage;
@@ -19,20 +23,22 @@ public class TestDataStorage {
         createdEntitiesMap = new EnumMap<>(Endpoint.class);
     }
 
+    // Возвращает экземпляр TestDataStorage (синглтон).
     public static TestDataStorage getStorage() {
         if (testDataStorage == null) {
             testDataStorage = new TestDataStorage();
         }
         return testDataStorage;
     }
-
+    // Добавляет в хранилище сущности, которые были созданы в ходе тестов.
+    // Каждая сущность привязывается к определенному Endpoint.
     private void addCreatedEntity(Endpoint endpoint, String id) {
         if (id != null) {
             createdEntitiesMap.computeIfAbsent(endpoint,
                     key -> new HashSet<>()).add(id);
         }
     }
-
+    // Извлекает ID или локатор из переданной модели данных (используется для идентификации сущности).
     private String getEntityIdOrLocator(BaseModel model) {
         try {
             var idField = model.getClass().getDeclaredField("id");
@@ -52,10 +58,13 @@ public class TestDataStorage {
             }
         }
     }
+
+    // Добавляет сущность в хранилище, автоматически получая ее ID или локатор
     public void addCreatedEntity(Endpoint endpoint, BaseModel model) {
-        addCreatedEntity(endpoint,getEntityIdOrLocator(model));
+        addCreatedEntity(endpoint, getEntityIdOrLocator(model));
     }
 
+    // Удаляет все сущности, созданные во время тестов, через запросы к соответствующему Endpoint
     public void deleteCreatedEntities() {
         createdEntitiesMap.forEach(((endpoint, ids) ->
                 ids.forEach(id ->

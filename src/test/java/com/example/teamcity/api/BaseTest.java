@@ -16,12 +16,19 @@ public class BaseTest {
     protected CheckedRequests superUserCheckRequests = new CheckedRequests(Specifications.superUserSpec());
     protected TestData testData;
 
+    /**
+     * Автоматически генерируются тестовые данные с помощью метода generate(),
+     * который использует генератор тестовых данных
+     */
     @BeforeMethod(alwaysRun = true)
     public void beforeTest() {
         softy = new SoftAssert();
         testData = generate();
     }
 
+    /**
+     * Удаляются созданные в ходе теста сущности с помощью TestDataStorage.
+     */
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         softy.assertAll();

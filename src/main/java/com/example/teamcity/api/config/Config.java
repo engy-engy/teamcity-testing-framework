@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Отвечает за загрузку конфигурационных настроек из файла config.properties. Singleton
+ */
 public class Config {
 
     private final static String CONFIG_PROPERTIES = "config.properties";
