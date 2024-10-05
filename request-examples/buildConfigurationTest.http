@@ -1,12 +1,44 @@
 ### Constants
-@host = 192.168.0.5
+@host = 192.168.0.3
 @port = 8111
 @user= admin
 @password = admin
+@username = test_nGlkkRNTER
 
 ### Hardcoded test data
 @projectId = test_project_1
 @buildTypeId = test_build_type_1
+
+### Get roles
+# @no-cookie-jar
+GET http://admin:admin@{{host}}:{{port}}/app/rest/roles
+Accept: application/json
+Authorization: Basic test_wXRrTwXouv test_HPVkYfRVnS
+
+### Get user
+# @no-cookie-jar
+GET http://admin:admin@{{host}}:{{port}}/app/rest/users/username:test_uNWSRMAGgC
+Content-Type: application/json
+Accept: application/json
+Authorization: Basic test_uNWSRMAGgC test_DPjlNSlLnB
+
+### Set role with user
+# @no-cookie-jar
+PUT http://admin:admin@{{host}}:{{port}}/app/rest/users/id:139
+Content-Type: application/json
+Accept: application/json
+//Authorization: Basic test_wXRrTwXouv test_HPVkYfRVnS
+
+{
+  "id": "70",
+  "username": "test_nGlkkRNTER",
+	"role": [
+		{
+			"roleId": "SYSTEM_ADMIN",
+			"scope": "p"
+		}
+	]
+}
 
 ### Get token CSRF-token
 # @no-cookie-jar
@@ -16,6 +48,7 @@ GET http://admin:admin@192.168.0.5:8111/login.html
 GET http://192.168.0.5:8111/app/rest/buildTypes/id%3ATestHNCxiHVgmT_TestOZecxfMAfC
 # @no-cookie-jar
 Accept: application/json
+Content-Type: application/json
 Authorization: Basic test_wXRrTwXouv test_HPVkYfRVnS
 
 ### 1. Create project

@@ -23,7 +23,7 @@ public class UncheckedRequests {
         }
     }
 
-    public UncheckedBase UngetRequest(Endpoint endpoint) {
+    public UncheckedBase getRequest(Endpoint endpoint) {
         return requests.get(endpoint);
     }
 }
