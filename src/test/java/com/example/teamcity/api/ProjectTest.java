@@ -9,15 +9,14 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
-import static com.example.teamcity.api.enums.Endpoint.USERS;
+import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
 @Test(groups = {"Regression"})
 public class ProjectTest extends BaseApiTest{
 
     @Test(description = "User should be able to create project", groups = {"Positive", "CRUD"})
-    public void userSuccessCreateProjectTest() {
+    public void userCreateProjectTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var project = userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
@@ -25,7 +24,7 @@ public class ProjectTest extends BaseApiTest{
     }
 
     @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
-    public void userSuccessGetProjectDetailsTest() {
+    public void userGetProjectDetailsTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
@@ -34,8 +33,21 @@ public class ProjectTest extends BaseApiTest{
         softy.assertEquals(testData.getProject(), project);
     }
 
+    @Test(description = "User should be able to archived project", groups = {"Positive", "CRUD"})
+    public void userArchivedProjectTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+        var projectBodyTrue = generate().getProject();
+
+        var projectArchived = userAuthSpec.getRequest(PROJECTS).updateWithPath(testData.getProject().getId() + "/archived", null, "true");
+
+        String responseBody = projectArchived.getBody().asString();
+        softy.assertEquals(responseBody, "true", "Expected response body to be 'true'");
+    }
+
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})
-    public void userSuccessCopyProjectTest() {
+    public void userCopyProjectTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
@@ -52,7 +64,7 @@ public class ProjectTest extends BaseApiTest{
     }
 
     @Test(description = "User should be able to update data to project", groups = {"Positive", "CRUD"})
-    public void userSuccessUpdateDataProjectTest() {
+    public void userUpdateDataProjectTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var project = userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());

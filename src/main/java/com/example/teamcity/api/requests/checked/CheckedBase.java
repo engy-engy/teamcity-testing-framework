@@ -6,6 +6,8 @@ import com.example.teamcity.api.models.BaseModel;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
@@ -65,5 +67,17 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
                 .read(id)
                 .then().assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().asString();
+    }
+
+    @Override
+    public Response updateWithPath(String path, BaseModel model, String is) {
+        String formattedUrl = String.format(endpoint.getUrl() + "/%s", path);  // динамическая подстановка параметра
+        return RestAssured
+                .given()
+                .spec(spec)
+                .accept("text/plain")
+                .contentType("text/plain")
+                .body(is)
+                .put(formattedUrl);
     }
 }
