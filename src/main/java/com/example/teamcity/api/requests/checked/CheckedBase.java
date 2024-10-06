@@ -51,10 +51,12 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
 
     @Override
     public T update(String id, BaseModel model) {
-        return (T) unchekedBase
+        var createdModel = (T) unchekedBase
                 .update(id, model)
                 .then().assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
+        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
+        return createdModel;
     }
 
     @Override
