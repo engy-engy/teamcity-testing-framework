@@ -3,6 +3,7 @@ package com.example.teamcity.api;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.models.SourceProject;
 import com.example.teamcity.api.requests.CheckedRequests;
+import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import org.apache.http.HttpStatus;
@@ -22,7 +23,6 @@ public class ProjectTest extends BaseApiTest{
         var project = userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
         softy.assertEquals(testData.getProject(), project);
     }
-
     @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
     public void userGetProjectDetailsTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
@@ -71,6 +71,32 @@ public class ProjectTest extends BaseApiTest{
 
         softy.assertEquals(projectCopy.getId(), response.getId());
         softy.assertEquals(projectCopy.getName(), response.getName());
+    }
+
+    @Test(description = "User should be able to delete project", groups = {"Positive", "CRUD"})
+    public void userDeleteProjectById() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .delete(testData.getProject().getId())
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
+    }
+
+    @Test(description = "User should be able to delete project", groups = {"Positive", "CRUD"})
+    public void userDeleteProjectByLocator() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+
+        var project = testData.getProject();
+        project.setSourceProject(generate(SourceProject.class, project.getId()));
+
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .delete(testData.getProject().getSourceProject().getLocator())
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
     }
 
     @Test(description = "User cannot be able to create project same id project", groups = {"Negative", "CRUD"})
