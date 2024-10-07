@@ -38,12 +38,22 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-        var projectBodyTrue = generate().getProject();
 
         var projectArchived = userAuthSpec.getRequest(PROJECTS).updateWithPath(testData.getProject().getId() + "/archived", null, "true");
 
         String responseBody = projectArchived.getBody().asString();
         softy.assertEquals(responseBody, "true", "Expected response body to be 'true'");
+    }
+
+    @Test(description = "User should be able to get data to status about archiving for project", groups = {"Positive", "CRUD"})
+    public void userGeStatusArchivedProjectTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        var statusArchivedProject = userAuthSpec.getRequest(PROJECTS).updateWithPath(testData.getProject().getId() + "/archived", null, "true");
+        String responseBody = statusArchivedProject.getBody().asString();
+        softy.assertEquals(responseBody, "true");
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})
@@ -63,21 +73,6 @@ public class ProjectTest extends BaseApiTest{
         softy.assertEquals(projectCopy.getName(), response.getName());
     }
 
-    @Test(description = "User should be able to update data to project", groups = {"Positive", "CRUD"})
-    public void userUpdateDataProjectTest() {
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-        var project = userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
-
-        var newDataProject = generate().getProject();
-        newDataProject.setId(project.getId());
-
-        // to do
-        //var response = userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId(), newDataProject);
-
-        //softy.assertEquals(testData.getProject(), response);
-    }
-
     @Test(description = "User cannot be able to create project same id project", groups = {"Negative", "CRUD"})
     public void userCannotCreateTwoProjectWithTheSameIdTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
@@ -95,6 +90,5 @@ public class ProjectTest extends BaseApiTest{
                         + "\nError occurred while processing this request."
                         .formatted(testData.getBuildType().getId())));
     }
-
 
 }
