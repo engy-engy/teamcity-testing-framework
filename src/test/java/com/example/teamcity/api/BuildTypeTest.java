@@ -104,7 +104,6 @@ public class BuildTypeTest extends BaseApiTest {
                         + project2.getId() + "\n"
                         + "Access denied. Check the user has enough permissions to perform the operation."
                         .formatted(testData.getBuildType().getId())));
-
     }
 
     @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
