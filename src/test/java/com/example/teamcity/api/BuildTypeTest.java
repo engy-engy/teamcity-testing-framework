@@ -47,7 +47,7 @@ public class BuildTypeTest extends BaseApiTest {
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
         new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
                 .create(buildTypeWithSameId)
-                        .then()
+                .then()
                 .assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
                         .formatted(testData.getBuildType().getId())));
@@ -58,96 +58,89 @@ public class BuildTypeTest extends BaseApiTest {
 
         step("Create user");
         var createdUser = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
         step("Create project");
-        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
 
         step("Grant user PROJECT_ADMIN role in project");
         testData.getUser().setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(createdUser.getId(), testData.getUser());
 
         step("Create buildType for project by user (PROJECT_ADMIN)");
-        var buildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
+        var buildType = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
         step("Check buildType was created successfully");
         softy.assertEquals(testData.getBuildType().getName(), buildType.getName(), "Build type name is not correct");
 
     }
 
-    /*@Test(description = "Project admin should not be able to create build type for not their project ", groups = {"Negative","Roles "})
+    @Test(description = "Project admin should not be able to create build type for not their project ", groups = {"Negative","Roles "})
     public void projectAdminCannotCreateBuildTypeForAnotherUserProjectTest(){
-        // no bugs вариант
-
-        *//*
-        step("Create project1 and project2 as superuser");
-        var project1 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
-        var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate().getProject());
-        var projectId1 = project1.getId();
-        var projectId2 = project2.getId();
-        System.out.println(projectId1);
-        System.out.println(projectId2);
-        step("Create user1 with PROJECT_ADMIN role in project1");
         var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project1.getId()));
+        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
 
+        userAuthSpec.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        step("Create user2 with PROJECT_ADMIN role in project1");
-        var user2 = generate().getUser();
-        user2 = superUserCheckRequests.<User>getRequest(USERS).create(user2);
 
-        user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project2.getId()));
+        var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
+        var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
+        var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project.getId()));
         superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
 
-
-        step("Attempt to create build type for project1 by user2");
-        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project2.getId()));
-        superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
-
-        var buildType = generate().getBuildType();
-
-        userCheckRequests.getRequest(BUILD_TYPES).create(buildType);
-*//*
-        // Мой вариант
-
-        step("Create user1");
-        var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
-        testData.getUser().setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
-        var userCheckRequests1 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-        superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
-
-
-        step("Create project1");
-        userCheckRequests1.<Project>getRequest(PROJECTS).create(testData.getProject());
-        var projectUser1 = testData.getProject();
-
-
-        step("Create user2");
-        var user2 = generate().getUser();
-        superUserCheckRequests.<User>getRequest(USERS).create(user2);
-        var userCheckRequests2 = new CheckedRequests(Specifications.authSpec(user2));
-
-        step("Create project2");
-        var project2 = generate().getProject();
-        userCheckRequests2.<Project>getRequest(PROJECTS).create(project2);
-
-        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project2.getId()));
-        superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
-
-        //user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project2.getId()));
-
-        step("Create buildType for project1 by user2");
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
-                .create(generate(BuildType.class))
+        var buildType2 = generate(BuildType.class);
+        buildType2.getProject().setId(project2.getId());
+        userAuthSpec2.getRequest(BUILD_TYPES).
+                create(buildType2)
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
+                .statusCode(HttpStatus.SC_FORBIDDEN)
+                .body(Matchers.containsString("You do not have enough permissions to edit project with id: "
+                        + project2.getId() + "\n"
+                        + "Access denied. Check the user has enough permissions to perform the operation."
                         .formatted(testData.getBuildType().getId())));
-        userCheckRequests1.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        step("Check buildType was not created with forbidden code");
-    }*/
+    }
+
+    @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
+    public void projectAdminCannotCreateProjectForAnotherUserProjectTest(){
+        var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        var project = testData.getProject();
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+
+        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
+        superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
+
+
+        var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
+        var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
+        superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
+
+        generate(Project.class);
+
+        userAuthSpec.getRequest(PROJECTS)
+                .create(project)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_FORBIDDEN)
+                .body(Matchers.containsString("You do not have \"Create subproject\" permission in project with internal id: _Root\n"
+                        + "Access denied. Check the user has enough permissions to perform the operation."
+                        .formatted(testData.getBuildType().getId())));
+
+        userAuthSpec2.getRequest(PROJECTS)
+                .create(project)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_FORBIDDEN)
+                .body(Matchers.containsString("You do not have \"Create subproject\" permission in project with internal id: _Root\n"
+                        + "Access denied. Check the user has enough permissions to perform the operation."
+                        .formatted(testData.getBuildType().getId())));
+    }
 }
