@@ -10,8 +10,10 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.*;
+import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
+import static com.example.teamcity.api.enums.Endpoint.USERS;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
+import static org.hamcrest.Matchers.equalTo;
 
 @Test(groups = {"Regression"})
 public class ProjectTest extends BaseApiTest{
@@ -51,9 +53,14 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        var statusArchivedProject = userAuthSpec.getRequest(PROJECTS).updateWithPath(testData.getProject().getId() + "/archived", null, "true");
-        String responseBody = statusArchivedProject.getBody().asString();
-        softy.assertEquals(responseBody, "true");
+        userAuthSpec.getRequest(PROJECTS).updateWithPath(testData.getProject().getId() + "/archived", null, "true");
+
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .read(testData.getProject().getId())
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .and()
+                .body("archived", equalTo(true));
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})
@@ -73,7 +80,7 @@ public class ProjectTest extends BaseApiTest{
         softy.assertEquals(projectCopy.getName(), response.getName());
     }
 
-    @Test(description = "User should be able to delete project", groups = {"Positive", "CRUD"})
+    @Test(description = "User should be able to delete project by id", groups = {"Positive", "CRUD"})
     public void userDeleteProjectById() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
@@ -84,7 +91,7 @@ public class ProjectTest extends BaseApiTest{
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
     }
 
-    @Test(description = "User should be able to delete project", groups = {"Positive", "CRUD"})
+    @Test(description = "User should be able to delete project by locator", groups = {"Positive", "CRUD"})
     public void userDeleteProjectByLocator() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
