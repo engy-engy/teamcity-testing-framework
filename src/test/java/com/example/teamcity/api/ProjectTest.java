@@ -26,13 +26,24 @@ public class ProjectTest extends BaseApiTest{
         softy.assertEquals(testData.getProject(), project);
     }
     @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
-    public void userGetProjectDetailsTest() {
+    public void userGetProjectDetailsByIdTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
         var project = userAuthSpec.getRequest(PROJECTS).read(testData.getProject().getId());
 
         softy.assertEquals(testData.getProject(), project);
+    }
+
+    @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
+    public void userGetProjectDetailsByNameTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        var project = userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        var response = userAuthSpec.<Project>getRequest(PROJECTS).read("name", project.getName());
+
+        softy.assertEquals(response.as(Project.class).getName(), testData.getProject().getName());
     }
 
     @Test(description = "User should be able to archived project", groups = {"Positive", "CRUD"})

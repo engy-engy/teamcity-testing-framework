@@ -35,12 +35,28 @@ public class UncheckedBase extends Request implements CrudInterface {
     }
 
     @Override
+    public Response read(String query, String value) {
+        return RestAssured
+                .given()
+                .spec(spec)
+                .get(endpoint.getUrl() + "/"  + query + ":" + value);
+    }
+
+    @Override
     public Response update(String id, BaseModel model) {
         return RestAssured
                 .given()
                 .spec(spec)
                 .body(model)
                 .put(endpoint.getUrl() + "/id:" + id);
+    }
+
+    @Override
+    public Response delete(String id) {
+        return RestAssured
+                .given()
+                .spec(spec)
+                .delete(endpoint.getUrl() + "/id:" + id);
     }
 
     @Override
@@ -52,13 +68,5 @@ public class UncheckedBase extends Request implements CrudInterface {
                 .contentType("text/plain")
                 .body(is)
                 .put(formattedUrl);
-    }
-
-    @Override
-    public Response delete(String id) {
-        return RestAssured
-                .given()
-                .spec(spec)
-                .delete(endpoint.getUrl() + "/id:" + id);
     }
 }

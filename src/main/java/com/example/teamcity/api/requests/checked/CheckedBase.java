@@ -52,6 +52,14 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
+    public Response read(String query, String value) {
+        return RestAssured
+                .given()
+                .spec(spec)
+                .get(endpoint.getUrl() + "/"  + query + ":" + value);
+    }
+
+    @Override
     public T update(String id, BaseModel model) {
         var createdModel = (T) unchekedBase
                 .update(id, model)

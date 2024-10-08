@@ -86,7 +86,6 @@ public class BuildTypeTest extends BaseApiTest {
 
         userAuthSpec.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-
         var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
         var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
         var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
@@ -96,8 +95,8 @@ public class BuildTypeTest extends BaseApiTest {
 
         var buildType2 = generate(BuildType.class);
         buildType2.getProject().setId(project2.getId());
-        userAuthSpec2.getRequest(BUILD_TYPES).
-                create(buildType2)
+        userAuthSpec2.getRequest(BUILD_TYPES)
+                .create(buildType2)
                 .then()
                 .statusCode(HttpStatus.SC_FORBIDDEN)
                 .body(Matchers.containsString("You do not have enough permissions to edit project with id: "
@@ -116,7 +115,6 @@ public class BuildTypeTest extends BaseApiTest {
 
         user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
-
 
         var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
         var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
