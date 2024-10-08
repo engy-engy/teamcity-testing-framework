@@ -78,7 +78,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public Response updateWithPath(String path, BaseModel model, String is) {
+    public Response update(String path, BaseModel model, String is) {
         String formattedUrl = String.format(endpoint.getUrl() + "/%s", path);  // динамическая подстановка параметра
         return RestAssured
                 .given()
