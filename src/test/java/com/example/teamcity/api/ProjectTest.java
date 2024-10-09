@@ -1,5 +1,6 @@
 package com.example.teamcity.api;
 
+import com.example.teamcity.api.generators.RandomData;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.models.SourceProject;
 import com.example.teamcity.api.requests.CheckedRequests;
@@ -14,6 +15,7 @@ import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
 import static com.example.teamcity.api.enums.Endpoint.USERS;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasValue;
 
 @Test(groups = {"Regression"})
 public class ProjectTest extends BaseApiTest{
@@ -25,6 +27,7 @@ public class ProjectTest extends BaseApiTest{
         var project = userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
         softy.assertEquals(testData.getProject(), project);
     }
+
     @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
     public void userGetProjectDetailsByIdTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
@@ -62,7 +65,7 @@ public class ProjectTest extends BaseApiTest{
     public void userGeStatusArchivedProjectTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-        userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
         userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId() + "/archived", null, "true");
 
@@ -72,6 +75,23 @@ public class ProjectTest extends BaseApiTest{
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .and()
                 .body("archived", equalTo(true));
+    }
+
+    @Test(description = "User should be able to update data to for project", groups = {"Positive", "CRUD"})
+    public void userUpdateDataProjectTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+
+        testData.getProject().setValue(RandomData.getString() + "_Updated");
+
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .updateWithParameters("id", testData.getProject(), testData.getProject().getId())
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .and()
+                .body("value", equalTo(testData.getProject().getValue()))
+                .body("name", equalTo(testData.getProject().getId()));
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})

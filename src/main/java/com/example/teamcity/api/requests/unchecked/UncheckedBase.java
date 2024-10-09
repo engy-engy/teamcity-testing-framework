@@ -69,4 +69,14 @@ public class UncheckedBase extends Request implements CrudInterface {
                 .body(is)
                 .put(String.format(endpoint.getUrl() + "/%s", path));
     }
+
+    @Override
+    public Response updateWithParameters(String projectLocator, BaseModel model, String parameter) {
+        return RestAssured
+                .given()
+                .spec(spec)
+                .contentType("application/json")
+                .body(model)
+                .put(String.format(endpoint.getUrl() + "/%s" + "/parameters" + "/%s", projectLocator, parameter));
+    }
 }

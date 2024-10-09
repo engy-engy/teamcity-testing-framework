@@ -6,6 +6,8 @@ import com.example.teamcity.api.models.BaseModel;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
@@ -29,7 +31,8 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     public T create(BaseModel model) {
         var createdModel = (T) unchekedBase
                 .create(model)
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
         TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
         return createdModel;
@@ -39,7 +42,8 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     public T read(String id) {
         return (T) unchekedBase
                 .read(id)
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
     }
 
@@ -47,7 +51,8 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     public T read(String query, String value) {
         return (T) unchekedBase
                 .read(query, value)
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
     }
 
@@ -55,7 +60,8 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     public T update(String id, BaseModel model) {
         var createdModel = (T) unchekedBase
                 .update(id, model)
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
         TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
         return createdModel;
@@ -65,7 +71,8 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     public T update(String path, BaseModel model, String is) {
         var createdModel = (T) unchekedBase
                 .update(path, model, is)
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
         TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
         return createdModel;
@@ -75,8 +82,19 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     public Object delete(String id) {
         return unchekedBase
                 .delete(id)
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().asString();
     }
 
+    @Override
+    public T updateWithParameters(String projectLocator, BaseModel model, String parameter) {
+        var createdModel = (T) unchekedBase
+                .updateWithParameters(projectLocator, model, parameter)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
+        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
+        return createdModel;
+    }
 }

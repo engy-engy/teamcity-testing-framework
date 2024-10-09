@@ -25,4 +25,7 @@ public class Project extends BaseModel {
     @Parameterizable
     @Optional
     private Boolean copyAllAssociatedSettings = Boolean.FALSE;
+    @Parameterizable
+    @Optional
+    private String value;
 }
