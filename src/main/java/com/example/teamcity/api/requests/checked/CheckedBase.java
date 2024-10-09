@@ -6,8 +6,6 @@ import com.example.teamcity.api.models.BaseModel;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
@@ -27,12 +25,6 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
         this.unchekedBase = new UncheckedBase(spec,endpoint);
     }
 
-    /**
-     * Создает новую сущность, проверяет, что запрос завершился успешно (код 200),
-     * и сохраняет созданную сущность в TestDataStorage
-     * @param model
-     * @return
-     */
     @Override
     public T create(BaseModel model) {
         var createdModel = (T) unchekedBase
@@ -52,11 +44,11 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public Response read(String query, String value) {
-        return RestAssured
-                .given()
-                .spec(spec)
-                .get(endpoint.getUrl() + "/"  + query + ":" + value);
+    public T read(String query, String value) {
+        return (T) unchekedBase
+                .read(query, value)
+                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
     }
 
     @Override
@@ -70,22 +62,21 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
+    public T update(String path, BaseModel model, String is) {
+        var createdModel = (T) unchekedBase
+                .update(path, model, is)
+                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
+        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
+        return createdModel;
+    }
+
+    @Override
     public Object delete(String id) {
         return unchekedBase
-                .read(id)
+                .delete(id)
                 .then().assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().asString();
     }
 
-    @Override
-    public Response update(String path, BaseModel model, String is) {
-        String formattedUrl = String.format(endpoint.getUrl() + "/%s", path);  // динамическая подстановка параметра
-        return RestAssured
-                .given()
-                .spec(spec)
-                .accept("text/plain")
-                .contentType("text/plain")
-                .body(is)
-                .put(formattedUrl);
-    }
 }

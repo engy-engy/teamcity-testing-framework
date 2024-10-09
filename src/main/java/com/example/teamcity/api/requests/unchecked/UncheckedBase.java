@@ -61,12 +61,12 @@ public class UncheckedBase extends Request implements CrudInterface {
 
     @Override
     public Response update(String path, BaseModel model, String is) {
-        String formattedUrl = String.format(endpoint.getUrl() + "/%s", path);  // динамическая подстановка параметра
         return RestAssured
                 .given()
                 .spec(spec)
+                .accept("text/plain")
                 .contentType("text/plain")
                 .body(is)
-                .put(formattedUrl);
+                .put(String.format(endpoint.getUrl() + "/%s", path));
     }
 }

@@ -106,7 +106,7 @@ public class BuildTypeTest extends BaseApiTest {
     }
 
     @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
-    public void projectAdminCannotCreateProjectForAnotherUserProjectTest(){
+    public void projectAdminCannotCreateSubprojectWithoutPermissionTest(){
         var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
