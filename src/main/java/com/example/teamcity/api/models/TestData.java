@@ -8,4 +8,5 @@ public class TestData {
     private User user;
     private BuildType buildType;
     private SourceProject sourceProject;
+    private BuildQueue buildQueue;
 }

@@ -1,6 +1,5 @@
 package com.example.teamcity.api.models;
 
-import com.example.teamcity.api.annotations.Optional;
 import com.example.teamcity.api.annotations.Parameterizable;
 import com.example.teamcity.api.annotations.Random;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,14 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Step extends BaseModel {
-    private String id;
+public class Property extends BaseModel{
     @Random
     @Parameterizable
     private String name;
-    @Builder.Default
-    private String type = "simpleRunner";
-
+    @Random
     @Parameterizable
-    private Properties properties;
+    private String value;
 }

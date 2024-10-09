@@ -10,6 +10,4 @@ public interface CrudInterface {
     Object update(String path, BaseModel model, String is);
     Object delete(String id);
     Object updateWithParameters(String projectLocator, BaseModel model, String parameter);
-
-
 }

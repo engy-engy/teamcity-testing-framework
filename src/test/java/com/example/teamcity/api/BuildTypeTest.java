@@ -1,9 +1,6 @@
 package com.example.teamcity.api;
 
-import com.example.teamcity.api.models.BuildType;
-import com.example.teamcity.api.models.Project;
-import com.example.teamcity.api.models.Roles;
-import com.example.teamcity.api.models.User;
+import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
@@ -17,6 +14,7 @@ import java.util.Arrays;
 import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 import static io.qameta.allure.Allure.step;
+import static org.hamcrest.Matchers.equalTo;
 
 @Test(groups = {"Regression"})
 public class BuildTypeTest extends BaseApiTest {
@@ -33,6 +31,31 @@ public class BuildTypeTest extends BaseApiTest {
         var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
 
         softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
+    }
+
+    @Test(description = "User should be able to run build type", groups = {"Positive", "CRUD"})
+    public void userRunBuildTypeTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setName("Hello, world!");
+        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setValue("echo 'Hello World!'");
+        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+
+        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
+
+        generate(BuildQueue.class);
+        testData.getBuildQueue().getBuildType().setId(testData.getBuildType().getId());
+
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
+                .create(testData.getBuildQueue())
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .body("state", equalTo("queued"));
+
+        // to do checking for run build
     }
 
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
