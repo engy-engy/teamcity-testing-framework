@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 
 import static com.example.teamcity.api.enums.Endpoint.*;
+import static com.example.teamcity.api.enums.PermRoles.PROJECT_ADMIN;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 import static io.qameta.allure.Allure.step;
 import static org.hamcrest.Matchers.equalTo;
@@ -87,7 +88,7 @@ public class BuildTypeTest extends BaseApiTest {
         userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
 
         step("Grant user PROJECT_ADMIN role in project");
-        testData.getUser().setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
+        testData.getUser().setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(createdUser.getId(), testData.getUser());
 
         step("Create buildType for project by user (PROJECT_ADMIN)");
@@ -113,7 +114,7 @@ public class BuildTypeTest extends BaseApiTest {
         var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
         var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project.getId()));
+        user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + project.getId()));
         superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
 
         var buildType2 = generate(BuildType.class);
@@ -136,13 +137,13 @@ public class BuildTypeTest extends BaseApiTest {
         var project = testData.getProject();
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
-        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
+        user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
 
         var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
         var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
+        user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
 
         generate(Project.class);
