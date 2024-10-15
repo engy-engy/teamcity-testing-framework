@@ -8,14 +8,13 @@ import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
 import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
 import static com.example.teamcity.api.enums.Endpoint.USERS;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
+import static com.example.teamcity.api.spec.ResponseSpecifications.badRequestSpec;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasValue;
 
 @Test(groups = {"Regression"})
 public class ProjectTest extends BaseApiTest{
@@ -148,8 +147,7 @@ public class ProjectTest extends BaseApiTest{
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
                 .create(testData.getProject())
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body(Matchers.containsString("DuplicateProjectNameException: Project with this name already exists: "
+                .spec(badRequestSpec("DuplicateProjectNameException: Project with this name already exists: "
                         + testData.getProject().getName()
                         + "\nError occurred while processing this request."
                         .formatted(testData.getBuildType().getId())));

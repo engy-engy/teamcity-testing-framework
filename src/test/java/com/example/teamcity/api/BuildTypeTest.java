@@ -6,7 +6,6 @@ import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -14,6 +13,8 @@ import java.util.Arrays;
 import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.enums.PermRoles.PROJECT_ADMIN;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
+import static com.example.teamcity.api.spec.ResponseSpecifications.badRequestSpec;
+import static com.example.teamcity.api.spec.ResponseSpecifications.forbiddenRequestSpec;
 import static io.qameta.allure.Allure.step;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -72,8 +73,7 @@ public class BuildTypeTest extends BaseApiTest {
         new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
                 .create(buildTypeWithSameId)
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
+                .spec(badRequestSpec("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
                         .formatted(testData.getBuildType().getId())));
     }
 
@@ -122,11 +122,9 @@ public class BuildTypeTest extends BaseApiTest {
         userAuthSpec2.getRequest(BUILD_TYPES)
                 .create(buildType2)
                 .then()
-                .statusCode(HttpStatus.SC_FORBIDDEN)
-                .body(Matchers.containsString("You do not have enough permissions to edit project with id: "
+                .spec(forbiddenRequestSpec("You do not have enough permissions to edit project with id: "
                         + project2.getId() + "\n"
-                        + "Access denied. Check the user has enough permissions to perform the operation."
-                        .formatted(testData.getBuildType().getId())));
+                        + "Access denied. Check the user has enough permissions to perform the operation."));
     }
 
     @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
@@ -151,17 +149,12 @@ public class BuildTypeTest extends BaseApiTest {
         userAuthSpec.getRequest(PROJECTS)
                 .create(project)
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_FORBIDDEN)
-                .body(Matchers.containsString("You do not have \"Create subproject\" permission in project with internal id: _Root\n"
-                        + "Access denied. Check the user has enough permissions to perform the operation."
-                        .formatted(testData.getBuildType().getId())));
-
+                .spec(forbiddenRequestSpec("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
+                        "Access denied. Check the user has enough permissions to perform the operation."));
         userAuthSpec2.getRequest(PROJECTS)
-                .create(project)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_FORBIDDEN)
-                .body(Matchers.containsString("You do not have \"Create subproject\" permission in project with internal id: _Root\n"
-                        + "Access denied. Check the user has enough permissions to perform the operation."
-                        .formatted(testData.getBuildType().getId())));
+                        .create(project)
+                        .then()
+                        .spec(forbiddenRequestSpec("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
+                                "Access denied. Check the user has enough permissions to perform the operation."));
     }
 }
