@@ -55,6 +55,15 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
+    public T readByLocator(String query, String value) {
+        return (T) unchekedBase
+                .read(query, value)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
+    }
+
+    @Override
     public T update(String id, BaseModel model) {
         var createdModel = (T) unchekedBase
                 .update(id, model)

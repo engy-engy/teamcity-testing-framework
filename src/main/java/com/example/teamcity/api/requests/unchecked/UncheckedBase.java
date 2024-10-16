@@ -39,7 +39,15 @@ public class UncheckedBase extends Request implements CrudInterface {
         return RestAssured
                 .given()
                 .spec(spec)
-                .get(endpoint.getUrl() + "/"  + query + ":" + value);
+                .get(endpoint.getUrl() + "/" + query + ":" + value);
+    }
+
+    @Override
+    public Response readByLocator(String query, String value) {
+        return RestAssured
+                .given()
+                .spec(spec)
+                .get(endpoint.getUrl()  + "?" + "locator=" + query + ":" + value);
     }
 
     @Override

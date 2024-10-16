@@ -5,10 +5,13 @@ import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.enums.PermRoles.PROJECT_ADMIN;
@@ -42,8 +45,15 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setName("Hello, world!");
-        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setValue("echo 'Hello World!'");
+        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setName("command.executable");
+        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setValue("/bin/bash");
+        Property secondProperty = generate(Property.class);
+        secondProperty.setName("command.parameters");
+        secondProperty.setValue("-c echo Hello World!");
+        List<Property> properties = new ArrayList<>(testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty());
+        properties.add(secondProperty);
+        testData.getBuildType().getSteps().getStep().get(0).getProperties().setProperty(properties);
+
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
         userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
@@ -51,13 +61,20 @@ public class BuildTypeTest extends BaseApiTest {
         generate(BuildQueue.class);
         testData.getBuildQueue().getBuildType().setId(testData.getBuildType().getId());
 
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
+        Response response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
                 .create(testData.getBuildQueue())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
-                .body("state", equalTo("queued"));
+                .body("state", equalTo("queued"))
+                .extract().response();
+        var buildId = response.jsonPath().getString("id");
 
-        // to do checking for run build
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
+                .readByLocator("id", buildId)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .body("build[0].state", equalTo("queued"));
+        // creating cycle for checking state build
     }
 
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
