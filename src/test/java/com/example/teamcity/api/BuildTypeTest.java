@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.enums.PermRoles.PROJECT_ADMIN;
@@ -19,6 +20,7 @@ import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 import static com.example.teamcity.api.spec.ResponseSpecifications.badRequestSpec;
 import static com.example.teamcity.api.spec.ResponseSpecifications.forbiddenRequestSpec;
 import static io.qameta.allure.Allure.step;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 
 @Test(groups = {"Regression"})
@@ -67,14 +69,19 @@ public class BuildTypeTest extends BaseApiTest {
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .body("state", equalTo("queued"))
                 .extract().response();
+
         var buildId = response.jsonPath().getString("id");
 
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
-                .readByLocator("id", buildId)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .body("build[0].state", equalTo("queued"));
-        // creating cycle for checking state build
+        await().atMost(60, TimeUnit.SECONDS).until(() -> {
+            Response res = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
+                    .readByLocator("id", buildId)
+                    .then()
+                    .assertThat().statusCode(HttpStatus.SC_OK)
+                    .extract().response();
+
+            var countQueue = res.jsonPath().getString("count");
+            return countQueue.contains("0");
+        });
     }
 
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})

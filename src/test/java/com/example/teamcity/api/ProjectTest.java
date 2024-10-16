@@ -84,13 +84,15 @@ public class ProjectTest extends BaseApiTest{
 
         testData.getProject().setValue(RandomData.getString() + "_Updated");
 
+        var parameter = RandomData.getString(6);
+
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .updateWithParameters("id", testData.getProject(), testData.getProject().getId())
+                .updateWithParameters(testData.getProject().getId(), testData.getProject(),parameter)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .and()
                 .body("value", equalTo(testData.getProject().getValue()))
-                .body("name", equalTo(testData.getProject().getId()));
+                .body("name", equalTo(parameter));
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})

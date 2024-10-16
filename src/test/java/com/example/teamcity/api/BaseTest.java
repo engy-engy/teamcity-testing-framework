@@ -1,5 +1,6 @@
 package com.example.teamcity.api;
 
+import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.TestData;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.spec.Specifications;
@@ -9,7 +10,6 @@ import org.testng.asserts.SoftAssert;
 
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
-// Сюда складываем все что нужно для любого теста
 public class BaseTest {
     protected SoftAssert softy;
     protected CheckedRequests superUserCheckRequests = new CheckedRequests(Specifications.superUserSpec());
@@ -31,6 +31,6 @@ public class BaseTest {
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         softy.assertAll();
-        //TestDataStorage.getStorage().deleteCreatedEntities();
+        TestDataStorage.getStorage().deleteCreatedEntities();
     }
 }

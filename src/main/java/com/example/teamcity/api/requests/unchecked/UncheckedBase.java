@@ -85,6 +85,6 @@ public class UncheckedBase extends Request implements CrudInterface {
                 .spec(spec)
                 .contentType("application/json")
                 .body(model)
-                .put(String.format(endpoint.getUrl() + "/%s" + "/parameters" + "/%s", projectLocator, parameter));
+                .put(String.format(endpoint.getUrl() + "/%s/parameters/%s", projectLocator, parameter));
     }
 }
