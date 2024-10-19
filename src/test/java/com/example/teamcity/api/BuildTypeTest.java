@@ -70,17 +70,18 @@ public class BuildTypeTest extends BaseApiTest {
                 .body("state", equalTo("queued"))
                 .extract().response();
 
-        var buildId = response.jsonPath().getString("id");
+        int buildId = response.jsonPath().getInt("id");
 
         await().atMost(60, TimeUnit.SECONDS).until(() -> {
             Response res = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
-                    .readByLocator("id", buildId)
+                    .readByLocator("id", String.valueOf(buildId))
                     .then()
                     .assertThat().statusCode(HttpStatus.SC_OK)
                     .extract().response();
 
-            var countQueue = res.jsonPath().getString("count");
-            return countQueue.contains("0");
+            List<Integer> buildIds = res.jsonPath().getList("build.id");
+
+            return !buildIds.contains(buildId);
         });
     }
 
