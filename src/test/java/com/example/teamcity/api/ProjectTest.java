@@ -134,6 +134,13 @@ public class ProjectTest extends BaseApiTest{
                 .delete(testData.getProject().getId())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
+
+        var responseCode = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .read(testData.getProject().getId())
+                .then()
+                .extract().response().statusCode();
+
+        softy.assertEquals(responseCode, HttpStatus.SC_NOT_FOUND);
     }
 
     @Test(description = "User should be able to delete project by locator", groups = {"Positive", "CRUD"})
