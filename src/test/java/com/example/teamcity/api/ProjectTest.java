@@ -7,6 +7,7 @@ import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
@@ -78,21 +79,31 @@ public class ProjectTest extends BaseApiTest{
 
     @Test(description = "User should be able to update data to for project", groups = {"Positive", "CRUD"})
     public void userUpdateDataProjectTest() {
+        var updatedProjectValue = RandomData.getString() + "_Updated";
+        var updatedProjectName = RandomData.getString(6);
+
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-
-        testData.getProject().setValue(RandomData.getString() + "_Updated");
-
-        var parameter = RandomData.getString(6);
+        testData.getProject().setValue(updatedProjectValue);
 
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .updateWithParameters(testData.getProject().getId(), testData.getProject(),parameter)
+                .updateWithParameters(testData.getProject().getId(), testData.getProject(),updatedProjectName)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
-                .and()
-                .body("value", equalTo(testData.getProject().getValue()))
-                .body("name", equalTo(parameter));
+                .extract().response();
+
+        Response currentProject = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .read(testData.getProject().getId())
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+
+        var currentName = currentProject.jsonPath().getString("parameters.property[0].name");
+        var currentValue = currentProject.jsonPath().getString("parameters.property[0].value");
+
+        softy.assertEquals(currentName, updatedProjectName);
+        softy.assertEquals(currentValue, updatedProjectValue);
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})
