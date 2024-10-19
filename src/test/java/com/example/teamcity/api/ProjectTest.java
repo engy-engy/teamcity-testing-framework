@@ -156,6 +156,13 @@ public class ProjectTest extends BaseApiTest{
                 .delete(testData.getProject().getSourceProject().getLocator())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
+
+        var responseCode = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+                .read(testData.getProject().getId())
+                .then()
+                .extract().response().statusCode();
+
+        softy.assertEquals(responseCode, HttpStatus.SC_NOT_FOUND);
     }
 
     @Test(description = "User cannot be able to create project same id project", groups = {"Negative", "CRUD"})
