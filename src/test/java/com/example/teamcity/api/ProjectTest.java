@@ -69,12 +69,14 @@ public class ProjectTest extends BaseApiTest{
 
         userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId() + "/archived", null, "true");
 
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+        Response response =  new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
                 .read(testData.getProject().getId())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
-                .and()
-                .body("archived", equalTo(true));
+                .extract().response();
+
+        boolean currentName = Boolean.parseBoolean(response.jsonPath().getString("archived"));
+        softy.assertEquals(currentName, true);
     }
 
     @Test(description = "User should be able to update data to for project", groups = {"Positive", "CRUD"})
