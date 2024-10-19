@@ -176,8 +176,7 @@ public class ProjectTest extends BaseApiTest{
                 .then()
                 .extract().response();
 
-        var textError = response.asString();
-        softy.assertTrue(textError.contains("DuplicateProjectNameException: Project with this name already exists: "
+        softy.assertTrue(response.asString().contains("DuplicateProjectNameException: Project with this name already exists: "
                         + testData.getProject().getName()),
                 "Expected error message not found in the response.");
     }

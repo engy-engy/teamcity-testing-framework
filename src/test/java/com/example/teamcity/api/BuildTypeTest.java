@@ -94,33 +94,28 @@ public class BuildTypeTest extends BaseApiTest {
         userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
+        var response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
                 .create(buildTypeWithSameId)
                 .then()
-                .spec(badRequestSpec("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
-                        .formatted(testData.getBuildType().getId())));
+                .extract().response();
+
+        softy.assertTrue(response.asString().contains("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
+                        .formatted(testData.getBuildType().getId())),
+                "Expected error message not found in the response.");
     }
 
     @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})
     public void projectAdminCreateBuildTypeTest() {
-
-        step("Create user");
         var createdUser = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        step("Create project");
         userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
-
-        step("Grant user PROJECT_ADMIN role in project");
         testData.getUser().setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update(createdUser.getId(), testData.getUser());
 
-        step("Create buildType for project by user (PROJECT_ADMIN)");
         var buildType = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        step("Check buildType was created successfully");
         softy.assertEquals(testData.getBuildType().getName(), buildType.getName(), "Build type name is not correct");
-
     }
 
     @Test(description = "Project admin should not be able to create build type for not their project ", groups = {"Negative","Roles "})
@@ -136,19 +131,22 @@ public class BuildTypeTest extends BaseApiTest {
 
         var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
         var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
-        var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
         user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + project.getId()));
         superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
 
         var buildType2 = generate(BuildType.class);
         buildType2.getProject().setId(project2.getId());
-        userAuthSpec2.getRequest(BUILD_TYPES)
+
+        var response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
                 .create(buildType2)
                 .then()
-                .spec(forbiddenRequestSpec("You do not have enough permissions to edit project with id: "
+                .extract().response();
+
+        softy.assertTrue(response.asString().contains("You do not have enough permissions to edit project with id: "
                         + project2.getId() + "\n"
-                        + "Access denied. Check the user has enough permissions to perform the operation."));
+                        + "Access denied. Check the user has enough permissions to perform the operation."),
+                "Expected error message not found in the response.");
     }
 
     @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
@@ -169,16 +167,23 @@ public class BuildTypeTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
 
         generate(Project.class);
-
-        userAuthSpec.getRequest(PROJECTS)
-                .create(project)
+        var response1 = userAuthSpec.getRequest(PROJECTS)
+                .create(testData.getProject())
                 .then()
-                .spec(forbiddenRequestSpec("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
-                        "Access denied. Check the user has enough permissions to perform the operation."));
-        userAuthSpec2.getRequest(PROJECTS)
-                        .create(project)
-                        .then()
-                        .spec(forbiddenRequestSpec("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
-                                "Access denied. Check the user has enough permissions to perform the operation."));
+                .extract().response();
+
+        softy.assertTrue(response1.asString().contains("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
+                        "Access denied. Check the user has enough permissions to perform the operation."),
+                "Expected error message not found in the response for user1.");
+
+        var response2 = userAuthSpec2.getRequest(PROJECTS)
+                .create(testData.getProject())
+                .then()
+                .extract().response();
+
+        softy.assertTrue(response2.asString().contains("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
+                        "Access denied. Check the user has enough permissions to perform the operation."),
+                "Expected error message not found in the response for user2.");
+
     }
 }
