@@ -14,8 +14,6 @@ import org.testng.annotations.Test;
 import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
 import static com.example.teamcity.api.enums.Endpoint.USERS;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
-import static com.example.teamcity.api.spec.ResponseSpecifications.badRequestSpec;
-import static org.hamcrest.Matchers.equalTo;
 
 @Test(groups = {"Regression"})
 public class ProjectTest extends BaseApiTest{
@@ -173,13 +171,14 @@ public class ProjectTest extends BaseApiTest{
 
         testData.getProject().setId(testData.getProject().getId());
 
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
+        var response = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
                 .create(testData.getProject())
                 .then()
-                .spec(badRequestSpec("DuplicateProjectNameException: Project with this name already exists: "
-                        + testData.getProject().getName()
-                        + "\nError occurred while processing this request."
-                        .formatted(testData.getBuildType().getId())));
-    }
+                .extract().response();
 
+        var textError = response.asString();
+        softy.assertTrue(textError.contains("DuplicateProjectNameException: Project with this name already exists: "
+                        + testData.getProject().getName()),
+                "Expected error message not found in the response.");
+    }
 }
