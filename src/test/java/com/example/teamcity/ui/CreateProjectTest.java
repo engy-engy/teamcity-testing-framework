@@ -1,18 +1,19 @@
 package com.example.teamcity.ui;
 
-import com.example.teamcity.ui.pages.LoginPage;
+import com.example.teamcity.ui.pages.admin.CreateProjectPage;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.USERS;
 import static io.qameta.allure.Allure.step;
 @Test(groups = {"Regression"})
 public class CreateProjectTest extends BaseUiTest {
+
+    private static final String REPO_URL = "https://github.com/engy-engy/teamcity-testing-framework";
+
     @Test(description = "User should be able to create project", groups = {"Positive"})
     public void userCreateProject() {
         // Подготовка окружения
         step("Login as user");
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        LoginPage.open().login(testData.getUser());
+        loginAs(testData.getUser());
 
         // Взаимодействие с UI ()
         step("Open Create Project Page (http://localhost:8111/admin/createObjectMenu.html)");
@@ -20,6 +21,11 @@ public class CreateProjectTest extends BaseUiTest {
         step("Click Proceed");
         step("Fix Project name and Build Type name values");
         step("Click Proceed");
+        CreateProjectPage.open("_Root")
+                .createForm(REPO_URL)
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
+
+
 
         // Проверка состояния API (корректность отправки данных с клиента на API)
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
