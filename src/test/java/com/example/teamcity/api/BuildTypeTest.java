@@ -17,9 +17,6 @@ import java.util.concurrent.TimeUnit;
 import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.enums.PermRoles.PROJECT_ADMIN;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
-import static com.example.teamcity.api.spec.ResponseSpecifications.badRequestSpec;
-import static com.example.teamcity.api.spec.ResponseSpecifications.forbiddenRequestSpec;
-import static io.qameta.allure.Allure.step;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -35,7 +32,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
+        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
 
         softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
     }
@@ -58,7 +55,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
+        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
 
         generate(BuildQueue.class);
         testData.getBuildQueue().getBuildType().setId(testData.getBuildType().getId());
@@ -112,7 +109,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
         testData.getUser().setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update(createdUser.getId(), testData.getUser());
+        superUserCheckRequests.getRequest(USERS).update("id:" + createdUser.getId(), testData.getUser());
 
         var buildType = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
@@ -126,7 +123,7 @@ public class BuildTypeTest extends BaseApiTest {
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
         user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
+        superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
 
         userAuthSpec.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
@@ -134,7 +131,7 @@ public class BuildTypeTest extends BaseApiTest {
         var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
 
         user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + project.getId()));
-        superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
+        superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
 
         var buildType2 = generate(BuildType.class);
         buildType2.getProject().setId(project2.getId());
@@ -159,13 +156,13 @@ public class BuildTypeTest extends BaseApiTest {
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
         user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update(user1.getId(), user1);
+        superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
 
         var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
         var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
         user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update(user2.getId(), user2);
+        superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
 
         generate(Project.class);
         var response1 = userAuthSpec.getRequest(PROJECTS)

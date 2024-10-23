@@ -68,7 +68,7 @@ public class TestDataStorage {
     public void deleteCreatedEntities() {
         createdEntitiesMap.forEach(((endpoint, ids) ->
                 ids.forEach(id ->
-                        new UncheckedBase(Specifications.superUserSpec(), endpoint).delete(id)))
+                        new UncheckedBase(Specifications.superUserSpec(), endpoint).delete("id:" +id)))
 
         );
         createdEntitiesMap.clear();
