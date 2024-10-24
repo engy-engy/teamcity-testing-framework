@@ -2,6 +2,7 @@ package com.example.teamcity.ui;
 
 import com.codeborne.selenide.Condition;
 import com.example.teamcity.api.models.Project;
+import com.example.teamcity.ui.pages.ProjectsPage;
 import com.example.teamcity.ui.pages.admin.CreateProjectPage;
 import com.example.teamcity.ui.pages.admin.ProjectPage;
 import org.testng.annotations.Test;
@@ -35,6 +36,10 @@ public class CreateProjectTest extends BaseUiTest {
         ProjectPage.open(createdProject.getId())
                 .title.shouldHave(Condition.exactText(testData.getProject().getName()));
 
+        var projectExist = ProjectsPage.open()
+                .getProjects().stream()
+                .anyMatch(project -> project.getName().equals(testData.getProject().getName()));
+        softy.assertTrue(projectExist);
     }
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
