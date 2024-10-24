@@ -32,7 +32,6 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
         var project = userAuthSpec.getRequest(PROJECTS).read("id:" + testData.getProject().getId());
-
         softy.assertEquals(testData.getProject(), project);
     }
 
@@ -41,9 +40,7 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var project = userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
-
         var response = userAuthSpec.<Project>getRequest(PROJECTS).read("name", project.getName());
-
         softy.assertEquals(response.getName(), testData.getProject().getName());
     }
 
@@ -52,9 +49,7 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-
         var projectArchived = userAuthSpec.getRequest(PROJECTS).update("id:" + testData.getProject().getId() + "/archived", null, "true");
-
         String responseBody = projectArchived.getBody().asString();
         softy.assertEquals(responseBody, "true", "Expected response body to be 'true'");
     }

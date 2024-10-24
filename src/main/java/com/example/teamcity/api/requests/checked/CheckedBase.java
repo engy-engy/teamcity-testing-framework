@@ -90,7 +90,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
         return unchekedBase
                 .delete(id)
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
+                .assertThat().statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().asString();
     }
 

@@ -152,7 +152,7 @@ public class BuildTypeTest extends BaseApiTest {
         var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        var project = testData.getProject();
+        var projectId1 = testData.getProject().getId();
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
         user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
@@ -163,6 +163,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
+
 
         generate(Project.class);
         var response1 = userAuthSpec.getRequest(PROJECTS)
@@ -182,6 +183,6 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertTrue(response2.asString().contains("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
                         "Access denied. Check the user has enough permissions to perform the operation."),
                 "Expected error message not found in the response for user2.");
-
+        superUserCheckRequests.getRequest(PROJECTS).delete(projectId1);
     }
 }
