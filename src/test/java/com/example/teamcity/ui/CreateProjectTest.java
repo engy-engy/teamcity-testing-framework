@@ -38,8 +38,9 @@ public class CreateProjectTest extends BaseUiTest {
 
         var projectExist = ProjectsPage.open()
                 .getProjects().stream()
-                .anyMatch(project -> project.getName().equals(testData.getProject().getName()));
+                .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()));
         softy.assertTrue(projectExist);
+        superUserCheckRequests.getRequest(PROJECTS).delete(createdProject.getId());
     }
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
