@@ -17,6 +17,7 @@ public abstract class CreateBasePage extends BasePage {
 
 
     protected void baseCreateForm(String url) {
+        urlInput.should(Condition.visible, BASE_WAITING);
         urlInput.val(url);
         proceedButton.click();
         connectionSuccessfulMessage.should(Condition.appear, BASE_WAITING);

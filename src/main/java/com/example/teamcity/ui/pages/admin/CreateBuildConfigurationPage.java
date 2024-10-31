@@ -1,5 +1,6 @@
 package com.example.teamcity.ui.pages.admin;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
@@ -23,11 +24,13 @@ public class CreateBuildConfigurationPage extends CreateBasePage {
     }
 
     public void setupBuildTypeConfiguration(String buildConfigurationName) {
+        buildConfigurationNameInput.should(Condition.visible, BASE_WAITING);
         buildConfigurationNameInput.val(buildConfigurationName);
         proceedButton.click();
     }
 
     public SelenideElement setupSameNameBuildTypeConfiguration(String buildConfigurationName) {
+        buildConfigurationNameInput.should(Condition.visible, BASE_WAITING);
         buildConfigurationNameInput.val(buildConfigurationName);
         proceedButton.click();
         return errorBuildTypeNameInput;
