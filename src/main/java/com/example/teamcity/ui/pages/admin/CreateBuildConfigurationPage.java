@@ -10,6 +10,7 @@ public class CreateBuildConfigurationPage extends CreateBasePage {
     private static final String BUILD_TYPE_MENU_SHOW_MODE = "createBuildTypeMenu";
 
     private SelenideElement buildConfigurationNameInput = $("#buildTypeName");
+    private SelenideElement errorBuildTypeNameInput = $("#error_buildTypeName");
 
 
     public CreateBuildConfigurationPage createForm(String url) {
@@ -24,5 +25,11 @@ public class CreateBuildConfigurationPage extends CreateBasePage {
     public void setupBuildTypeConfiguration(String buildConfigurationName) {
         buildConfigurationNameInput.val(buildConfigurationName);
         proceedButton.click();
+    }
+
+    public SelenideElement setupSameNameBuildTypeConfiguration(String buildConfigurationName) {
+        buildConfigurationNameInput.val(buildConfigurationName);
+        proceedButton.click();
+        return errorBuildTypeNameInput;
     }
 }

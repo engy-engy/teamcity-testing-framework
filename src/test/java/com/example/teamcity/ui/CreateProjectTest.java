@@ -17,7 +17,7 @@ public class CreateProjectTest extends BaseUiTest {
     private static final String REPO_URL = "https://github.com/engy-engy/workshops";
 
     @Test(description = "User should be able to create project", groups = {"Positive"})
-    public void createProjectTest() {
+    public void userCreateProjectTest() {
 
         step("Login as user");
         loginAs(testData.getUser());
@@ -39,7 +39,7 @@ public class CreateProjectTest extends BaseUiTest {
     }
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
-    public void createProjectWithoutNameTest() {
+    public void userCreateProjectWithoutNameTest() {
         // Подготовка окружения
         step("Login as user");
         step("Check number of projects");
