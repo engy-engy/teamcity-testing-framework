@@ -71,7 +71,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         await().atMost(60, TimeUnit.SECONDS).until(() -> {
             Response res = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
-                    .readByLocator("id", String.valueOf(buildId))
+                    .search("id", String.valueOf(buildId))
                     .then()
                     .assertThat().statusCode(HttpStatus.SC_OK)
                     .extract().response();
