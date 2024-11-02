@@ -51,12 +51,12 @@ public class CreateBuildTypeTest extends BaseUiTest {
         var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
         step("Open Create Build Type Page (http://localhost:8111/admin/createObjectMenu.html?projectId={projectId}&showMode=createBuildTypeMenu)");
-        CreateBuildConfigurationPage.open(testData.getProject().getId())
-                        .createForm(REPO_WORKSHOPS_URL)
-                        .setupBuildTypeConfiguration(testData.getBuildType().getName());
+        CreateBuildConfigurationPage.open(project.getId())
+                .createForm(REPO_WORKSHOPS_URL)
+                .setupBuildTypeConfiguration(testData.getBuildType().getName());
 
         step("Create Build Type same name");
-        SelenideElement errorElement = CreateBuildConfigurationPage.open(testData.getProject().getId())
+        SelenideElement errorElement = CreateBuildConfigurationPage.open(project.getId())
                 .createForm(REPO_TEAM_CITY_URL)
                 .setupSameNameBuildTypeConfiguration(testData.getBuildType().getName());
 

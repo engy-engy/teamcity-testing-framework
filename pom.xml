@@ -129,17 +129,30 @@
                 <version>3.1.0</version>
                 <configuration>
                     <filesets>
+                        <!-- Очистка build -->
                         <fileset>
                             <directory>${project.basedir}/build</directory>
                             <includes>
                                 <include>**/*</include>
                             </includes>
                         </fileset>
+                        <!-- Очистка build.reports.tests -->
                         <fileset>
                             <directory>${project.build.directory}/build.reports.tests</directory>
                             <includes>
                                 <include>*.html</include>
                                 <include>*.png</include>
+                            </includes>
+                        </fileset>
+                        <!-- Очистка allure-results -->
+                        <fileset>
+                            <directory>${project.basedir}/allure-results</directory>
+                        </fileset>
+                        <!-- Очистка target -->
+                        <fileset>
+                            <directory>${project.basedir}/target</directory>
+                            <includes>
+                                <include>**/*</include>
                             </includes>
                         </fileset>
                     </filesets>

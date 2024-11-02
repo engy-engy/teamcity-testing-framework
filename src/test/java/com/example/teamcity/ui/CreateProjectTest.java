@@ -1,11 +1,9 @@
 package com.example.teamcity.ui;
 
-import com.codeborne.selenide.Condition;
 import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.ui.pages.ProjectsPage;
 import com.example.teamcity.ui.pages.admin.CreateProjectPage;
-import com.example.teamcity.ui.pages.admin.ProjectPage;
 import org.testng.annotations.Test;
 
 import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
