@@ -28,7 +28,7 @@ public class CreateBuildTypeTest extends BaseUiTest {
         step("Open Create Build Type Page (http://localhost:8111/admin/createObjectMenu.html?projectId={projectId}&showMode=createBuildTypeMenu)");
         CreateBuildConfigurationPage.open(testData.getProject().getId())
                         .createForm(REPO_WORKSHOPS_URL)
-                        .setupBuildTypeConfiguration(testData.getBuildType().getName());
+                        .setupBuildTypeConfiguration(testData.getBuildType().getName(), true);
 
         step("Check build type was successfully created with correct data on API level");
         var createdBuildTypeConfig = superUserCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("name:" + testData.getBuildType().getName());
@@ -53,12 +53,12 @@ public class CreateBuildTypeTest extends BaseUiTest {
         step("Open Create Build Type Page (http://localhost:8111/admin/createObjectMenu.html?projectId={projectId}&showMode=createBuildTypeMenu)");
         CreateBuildConfigurationPage.open(project.getId())
                 .createForm(REPO_WORKSHOPS_URL)
-                .setupBuildTypeConfiguration(testData.getBuildType().getName());
+                .setupBuildTypeConfiguration(testData.getBuildType().getName(), true);
 
         step("Create Build Type same name");
         SelenideElement errorElement = CreateBuildConfigurationPage.open(project.getId())
                 .createForm(REPO_TEAM_CITY_URL)
-                .setupSameNameBuildTypeConfiguration(testData.getBuildType().getName());
+                .setupBuildTypeConfiguration(testData.getBuildType().getName(), false);
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
         softy.assertEquals(errorElement.text(),"Build configuration with name \"%s\" already exists in project: \"%s\""

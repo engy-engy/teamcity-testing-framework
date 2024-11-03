@@ -1,5 +1,6 @@
 package com.example.teamcity.ui;
 
+import com.codeborne.selenide.SelenideElement;
 import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.ui.pages.ProjectsPage;
@@ -22,7 +23,7 @@ public class CreateProjectTest extends BaseUiTest {
 
         CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),true);
 
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
         var createdProject = superUserCheckRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
@@ -38,20 +39,17 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
     public void userCreateProjectWithoutNameTest() {
-        // Подготовка окружения
+
         step("Login as user");
-        step("Check number of projects");
+        loginAs(testData.getUser());
 
-        // Взаимодействие с UI ()
         step("Open Create Project Page (http://localhost:8111/admin/createObjectMenu.html)");
-        step("Send all project parameters (repository URL)");
-        step("Click Proceed");
-        step("Set Project Name value is empty");
+        SelenideElement errorElement = CreateProjectPage.open("_Root")
+                .createForm(REPO_URL)
+                .setupProject("", testData.getBuildType().getName(), false);
 
-        // Проверка состояния API (корректность отправки данных с клиента на API)
-        step("Check that number of projects did not change");
-
-        // Проверка состояния UI (корректность считывания данных и отображение данных на UI)
         step("Check that error appears `Project name must not be empty`");
+        softy.assertEquals(errorElement.text(),"Project name must not be empty");
+
     }
 }

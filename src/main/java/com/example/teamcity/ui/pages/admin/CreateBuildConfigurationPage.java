@@ -14,6 +14,7 @@ public class CreateBuildConfigurationPage extends CreateBasePage {
     private SelenideElement buildConfigurationNameInput = $("#buildTypeName");
 
     private SelenideElement errorBuildTypeNameInput = $("#error_buildTypeName");
+
     private SelenideElement progressLoader = $("#discoveryProgressContainer");
 
     public CreateBuildConfigurationPage createForm(String url) {
@@ -25,17 +26,15 @@ public class CreateBuildConfigurationPage extends CreateBasePage {
         return Selenide.open(CREATE_URL.formatted(projectId, BUILD_TYPE_MENU_SHOW_MODE), CreateBuildConfigurationPage.class);
     }
 
-    public void setupBuildTypeConfiguration(String buildConfigurationName) {
+    public SelenideElement setupBuildTypeConfiguration(String buildConfigurationName, boolean waitForLoading) {
         buildConfigurationNameInput.should(Condition.visible, BASE_WAITING);
         buildConfigurationNameInput.val(buildConfigurationName);
         proceedButton.click();
-        progressLoader.shouldBe(attribute("style", "display: none;"));
-    }
 
-    public SelenideElement setupSameNameBuildTypeConfiguration(String buildConfigurationName) {
-        buildConfigurationNameInput.should(Condition.visible, BASE_WAITING);
-        buildConfigurationNameInput.val(buildConfigurationName);
-        proceedButton.click();
+        if (waitForLoading) {
+            progressLoader.shouldBe(attribute("style", "display: none;"));
+            return null; // Вернём null, чтобы показать, что ошибки нет
+        }
         return errorBuildTypeNameInput;
     }
 }

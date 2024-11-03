@@ -13,6 +13,8 @@ public class CreateProjectPage extends CreateBasePage {
 
     private SelenideElement progressLoader = $("#discoveryProgressContainer");
 
+    private SelenideElement errorProjectName = $("#error_projectName");
+
 
     public static CreateProjectPage open(String projectId) {
         return Selenide.open(CREATE_URL.formatted(projectId, PROJECT_SHOW_MODE), CreateProjectPage.class);
@@ -22,10 +24,16 @@ public class CreateProjectPage extends CreateBasePage {
         baseCreateForm(url);
         return this;
     }
-    public void setupProject(String projectName, String buildTypeName) {
+
+    public SelenideElement setupProject(String projectName, String buildTypeName, boolean waitForLoading) {
         projectNameInput.val(projectName);
         buildTypeNameInput.val(buildTypeName);
         proceedButton.click();
-        progressLoader.shouldBe(attribute("style", "display: none;"));
+
+        if (waitForLoading) {
+            progressLoader.shouldBe(attribute("style", "display: none;"));
+            return null;
+        }
+        return errorProjectName;
     }
 }
