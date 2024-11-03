@@ -52,4 +52,20 @@ public class CreateProjectTest extends BaseUiTest {
         softy.assertEquals(errorElement.text(),"Project name must not be empty");
 
     }
+
+    @Test(description = "User should not be able to create project with same name", groups = {"Negative"})
+    public void userCreateProjectWithSameNameTest() {
+
+        step("Login as user");
+        loginAs(testData.getUser());
+
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        SelenideElement errorElement = CreateProjectPage.open("_Root")
+                .createForm(REPO_URL)
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(), false);
+
+        softy.assertEquals(errorElement.text(),"Project with this name already exists: %s"
+                .formatted(testData.getProject().getName(), project.getName()));
+    }
 }

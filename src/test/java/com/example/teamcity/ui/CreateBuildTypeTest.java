@@ -41,24 +41,38 @@ public class CreateBuildTypeTest extends BaseUiTest {
         softy.assertTrue(buildsExist);
     }
 
+    @Test(description = "User should not be able to create build type configuration without name", groups = {"Positive"})
+    public void userCannotCreateBuildTypeConfigurationWithoutNameTest() {
+
+        step("Login as user");
+        loginAs(testData.getUser());
+
+        step("Create project and buildType -> API");
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        step("Create Build Type same name");
+        SelenideElement errorElement = CreateBuildConfigurationPage.open(project.getId())
+                .createForm(REPO_TEAM_CITY_URL)
+                .setupBuildTypeConfiguration("", false);
+
+        step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
+        softy.assertEquals(errorElement.text(), "Build configuration name must not be empty");
+    }
+
     @Test(description = "User should not be able to create build type configuration with same name", groups = {"Positive"})
     public void userCannotCreateBuildTypeConfigurationWithSameNameTest() {
 
         step("Login as user");
         loginAs(testData.getUser());
 
-        step("Create project -> API");
+        step("Create project and buildType -> API");
         var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
-
-        step("Open Create Build Type Page (http://localhost:8111/admin/createObjectMenu.html?projectId={projectId}&showMode=createBuildTypeMenu)");
-        CreateBuildConfigurationPage.open(project.getId())
-                .createForm(REPO_WORKSHOPS_URL)
-                .setupBuildTypeConfiguration(testData.getBuildType().getName(), true);
+        var buildType = superUserCheckRequests.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
         step("Create Build Type same name");
         SelenideElement errorElement = CreateBuildConfigurationPage.open(project.getId())
                 .createForm(REPO_TEAM_CITY_URL)
-                .setupBuildTypeConfiguration(testData.getBuildType().getName(), false);
+                .setupBuildTypeConfiguration(buildType.getName(), false);
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
         softy.assertEquals(errorElement.text(),"Build configuration with name \"%s\" already exists in project: \"%s\""
