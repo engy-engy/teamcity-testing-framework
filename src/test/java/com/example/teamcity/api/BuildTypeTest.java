@@ -122,7 +122,7 @@ public class BuildTypeTest extends BaseApiTest {
         var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        user1.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId()));
+        user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
 
         userAuthSpec.getRequest(BUILD_TYPES).create(testData.getBuildType());
