@@ -16,6 +16,4 @@ import java.util.List;
 public class Steps extends BaseModel{
     private Integer count;
     private List<Step> step;
-
-
 }

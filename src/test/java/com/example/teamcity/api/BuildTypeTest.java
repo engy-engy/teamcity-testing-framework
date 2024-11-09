@@ -44,19 +44,18 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        var buildType = testData.getBuildType();
-        buildType.getSteps().getStep().get(0).getProperties().getProperty().get(0).setName("script.content");
-        buildType.getSteps().getStep().get(0).getProperties().getProperty().get(0).setValue("echo 'Hello World!'");
+        testData.getBuildType().getSteps().getStep().get(0).setProperties(new Properties());
+        testData.getBuildType().getSteps().getStep().get(0).getProperties().setProperty(new ArrayList<>(Arrays.asList(
+                new Property("script.content", "echo 'Hello World!'"),
+                new Property("teamcity.step.mode", "default"),
+                new Property("use.custom.script", "true"))));
 
-        List<Property> properties = getPropertyList(buildType);
-        buildType.getSteps().getStep().get(0).getProperties().setProperty(properties);
+        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        userCheckRequests.getRequest(BUILD_TYPES).create(buildType);
-
-        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + buildType.getId());
+        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
 
         generate(BuildQueue.class);
-        testData.getBuildQueue().getBuildType().setId(buildType.getId());
+        testData.getBuildQueue().getBuildType().setId(testData.getBuildType().getId());
 
         Response response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
                 .create(testData.getBuildQueue())
@@ -80,21 +79,6 @@ public class BuildTypeTest extends BaseApiTest {
         });
     }
 
-    private static List<Property> getPropertyList(BuildType buildType) {
-        Property secondProperty = new Property();
-        secondProperty.setName("teamcity.step.mode");
-        secondProperty.setValue("default");
-
-        Property thirdProperty = new Property();
-        thirdProperty.setName("use.custom.script");
-        thirdProperty.setValue("true");
-
-        // Обновляем свойства с новыми параметрами
-        List<Property> properties = new ArrayList<>(buildType.getSteps().getStep().get(0).getProperties().getProperty());
-        properties.add(secondProperty);
-        properties.add(thirdProperty);
-        return properties;
-    }
 
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
     public void userCreatesTwoBuildTypeWithTheSameIdTest() {
