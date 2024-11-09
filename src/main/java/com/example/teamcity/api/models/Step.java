@@ -1,6 +1,5 @@
 package com.example.teamcity.api.models;
 
-import com.example.teamcity.api.annotations.Optional;
 import com.example.teamcity.api.annotations.Parameterizable;
 import com.example.teamcity.api.annotations.Random;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,7 +20,6 @@ public class Step extends BaseModel {
     private String name;
     @Builder.Default
     private String type = "simpleRunner";
-
     @Parameterizable
     private Properties properties;
 }

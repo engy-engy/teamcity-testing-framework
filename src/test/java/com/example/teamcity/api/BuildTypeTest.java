@@ -44,21 +44,19 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setName("command.executable");
-        testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty().get(0).setValue("/bin/bash");
-        Property secondProperty = generate(Property.class);
-        secondProperty.setName("command.parameters");
-        secondProperty.setValue("-c echo Hello World!");
-        List<Property> properties = new ArrayList<>(testData.getBuildType().getSteps().getStep().get(0).getProperties().getProperty());
-        properties.add(secondProperty);
-        testData.getBuildType().getSteps().getStep().get(0).getProperties().setProperty(properties);
+        var buildType = testData.getBuildType();
+        buildType.getSteps().getStep().get(0).getProperties().getProperty().get(0).setName("script.content");
+        buildType.getSteps().getStep().get(0).getProperties().getProperty().get(0).setValue("echo 'Hello World!'");
 
-        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+        List<Property> properties = getPropertyList(buildType);
+        buildType.getSteps().getStep().get(0).getProperties().setProperty(properties);
 
-        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
+        userCheckRequests.getRequest(BUILD_TYPES).create(buildType);
+
+        userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + buildType.getId());
 
         generate(BuildQueue.class);
-        testData.getBuildQueue().getBuildType().setId(testData.getBuildType().getId());
+        testData.getBuildQueue().getBuildType().setId(buildType.getId());
 
         Response response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_QUEUE)
                 .create(testData.getBuildQueue())
@@ -80,6 +78,22 @@ public class BuildTypeTest extends BaseApiTest {
 
             return !buildIds.contains(buildId);
         });
+    }
+
+    private static List<Property> getPropertyList(BuildType buildType) {
+        Property secondProperty = new Property();
+        secondProperty.setName("teamcity.step.mode");
+        secondProperty.setValue("default");
+
+        Property thirdProperty = new Property();
+        thirdProperty.setName("use.custom.script");
+        thirdProperty.setValue("true");
+
+        // Обновляем свойства с новыми параметрами
+        List<Property> properties = new ArrayList<>(buildType.getSteps().getStep().get(0).getProperties().getProperty());
+        properties.add(secondProperty);
+        properties.add(thirdProperty);
+        return properties;
     }
 
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
