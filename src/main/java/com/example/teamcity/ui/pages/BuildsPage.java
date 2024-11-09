@@ -1,7 +1,7 @@
 package com.example.teamcity.ui.pages;
 
 import com.codeborne.selenide.*;
-import com.example.teamcity.ui.elements.BuildElement;
+import com.example.teamcity.ui.elements.BuildProjectElement;
 import lombok.Getter;
 
 import java.util.List;
@@ -14,9 +14,11 @@ public class BuildsPage extends BasePage{
 
     private static final String BUILDS_URL = "/project/%s";
 
-    private ElementsCollection buildsElements = $$("div[class*=BuildsByBuildType__container]");
+    private ElementsCollection buildsProjectElements = $$("div[class*=BuildsByBuildType__container]");
 
     private SelenideElement header = $(".ProjectPageHeader__header--Z3");
+
+    public SelenideElement runBuildButton = $("button[data-test='run-build']");
 
     public static BuildsPage open(String projectName) {
         return Selenide.open(BUILDS_URL.formatted(projectName), BuildsPage.class);
@@ -26,7 +28,11 @@ public class BuildsPage extends BasePage{
         header.shouldBe(Condition.visible, BASE_WAITING);
     }
 
-    public List<BuildElement> getBuilds() {
-        return generatePageElements(buildsElements, BuildElement::new);
+    public List<BuildProjectElement> getBuilds() {
+        return generatePageElements(buildsProjectElements, BuildProjectElement::new);
+    }
+
+    public void clickRunBuildButton() {
+        runBuildButton.click();
     }
 }

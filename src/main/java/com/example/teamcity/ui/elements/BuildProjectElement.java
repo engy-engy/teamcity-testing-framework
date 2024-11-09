@@ -4,13 +4,13 @@ import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
 
 @Getter
-public class BuildElement extends BasePageElement {
+public class BuildProjectElement extends BasePageElement {
 
     private SelenideElement list;
     private SelenideElement item;
     private SelenideElement button;
 
-    public BuildElement(SelenideElement element) {
+    public BuildProjectElement(SelenideElement element) {
         super(element);
         this.list = find("div[class*=BuildTypes__list]");
         this.item = find("span[class*=MiddleEllipsis]");
