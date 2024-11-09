@@ -29,24 +29,21 @@ public class RunBuildTypeTest extends BaseUiTest {
         step("Create build type -> API");
         testData.getBuildType().getSteps().getStep().get(0).setProperties(new Properties());
         testData.getBuildType().getSteps().getStep().get(0).getProperties().setProperty(new ArrayList<>(Arrays.asList(
-                new Property("script.content", "echo 'Hello World!'"),
+                new Property("script.content", "echo 'Hello, World!'"),
                 new Property("teamcity.step.mode", "default"),
                 new Property("use.custom.script", "true"))));
-
         superUserCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        step("Open Project Builds Page (http://localhost:8111/project/test_piFRuNUNXY?mode=builds)");
-        step("Run Build Type Configuration");
-
+        step("Open Build Configuration Page and Run Build Type Configuration");
         ElementsCollection logResult = BuildConfigurationPage.open(testData.getBuildType().getId())
                 .clickRunBuildButton()
                 .clickBuildElement("1")
                 .clickBuildLogButton()
-                .findValueInLog("Hello World!");
+                .findValueInLog("Hello, World!");
 
         step("Check that text `Hello, world!` exist in build logs");
-        logResult.filter(Condition.text("Hello World!")).forEach(element -> {
-            softy.assertTrue(element.getText().contains("Hello World!"), "Текст 'Hello World!' не найден в элементе");
+        logResult.filter(Condition.text("Hello, World!")).forEach(element -> {
+            softy.assertTrue(element.getText().contains("Hello, World!"), "Текст 'Hello, World!' не найден в элементе");
         });
     }
 }
