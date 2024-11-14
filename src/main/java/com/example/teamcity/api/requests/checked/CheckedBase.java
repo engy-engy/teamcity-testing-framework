@@ -5,6 +5,7 @@ import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.BaseModel;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
+import com.example.teamcity.api.requests.SearchInterface;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
@@ -16,7 +17,7 @@ import org.apache.http.HttpStatus;
  * @param <T>
  */
 @SuppressWarnings("unchecked")
-public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface {
+public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface, SearchInterface {
 
     private final UncheckedBase unchekedBase;
 
@@ -46,24 +47,6 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public T read(String query, String value) {
-        return (T) unchekedBase
-                .read(query, value)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().as(endpoint.getModelClass());
-    }
-
-    @Override
-    public T readByLocator(String query, String value) {
-        return (T) unchekedBase
-                .read(query, value)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().as(endpoint.getModelClass());
-    }
-
-    @Override
     public T update(String id, BaseModel model) {
         var createdModel = (T) unchekedBase
                 .update(id, model)
@@ -75,9 +58,20 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public T update(String path, BaseModel model, String is) {
+    public T update(String path, String parameter) {
         var createdModel = (T) unchekedBase
-                .update(path, model, is)
+                .update(path, parameter)
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().as(endpoint.getModelClass());
+        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
+        return createdModel;
+    }
+
+    @Override
+    public T update(String projectLocator, BaseModel model, String parameter) {
+        var createdModel = (T) unchekedBase
+                .update(projectLocator, model, parameter)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
@@ -90,18 +84,17 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
         return unchekedBase
                 .delete(id)
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
+                .assertThat().statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().asString();
     }
 
     @Override
-    public T updateWithParameters(String projectLocator, BaseModel model, String parameter) {
-        var createdModel = (T) unchekedBase
-                .updateWithParameters(projectLocator, model, parameter)
+    public T search(String query, String value) {
+        return (T) unchekedBase
+                .search(query, value)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(endpoint.getModelClass());
-        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
-        return createdModel;
     }
+
 }

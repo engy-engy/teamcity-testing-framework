@@ -31,8 +31,7 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-        var project = userAuthSpec.getRequest(PROJECTS).read(testData.getProject().getId());
-
+        var project = userAuthSpec.getRequest(PROJECTS).read("id:" + testData.getProject().getId());
         softy.assertEquals(testData.getProject(), project);
     }
 
@@ -41,9 +40,7 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var project = userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
-
-        var response = userAuthSpec.<Project>getRequest(PROJECTS).read("name", project.getName());
-
+        var response = userAuthSpec.<Project>getRequest(PROJECTS).read("name:" + project.getName());
         softy.assertEquals(response.getName(), testData.getProject().getName());
     }
 
@@ -52,9 +49,7 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-
-        var projectArchived = userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId() + "/archived", null, "true");
-
+        var projectArchived = userAuthSpec.getRequest(PROJECTS).update("id:" + testData.getProject().getId() + "/archived", "true");
         String responseBody = projectArchived.getBody().asString();
         softy.assertEquals(responseBody, "true", "Expected response body to be 'true'");
     }
@@ -65,7 +60,7 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
-        userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId() + "/archived", null, "true");
+        userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId() + "/archived", "true");
 
         Response response =  new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
                 .read(testData.getProject().getId())
@@ -88,7 +83,7 @@ public class ProjectTest extends BaseApiTest{
         testData.getProject().setValue(updatedProjectValue);
 
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .updateWithParameters(testData.getProject().getId(), testData.getProject(),updatedProjectName)
+                .update(testData.getProject().getId(), testData.getProject(),updatedProjectName)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().response();
@@ -129,12 +124,12 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .delete(testData.getProject().getId())
+                .delete("id:" + testData.getProject().getId())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
 
         var responseCode = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .read(testData.getProject().getId())
+                .read("id:" + testData.getProject().getId())
                 .then()
                 .extract().response().statusCode();
 
@@ -151,12 +146,12 @@ public class ProjectTest extends BaseApiTest{
         project.setSourceProject(generate(SourceProject.class, project.getId()));
 
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .delete(testData.getProject().getSourceProject().getLocator())
+                .delete("id:" + testData.getProject().getSourceProject().getLocator())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
 
         var responseCode = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .read(testData.getProject().getId())
+                .read("id:" + testData.getProject().getId())
                 .then()
                 .extract().response().statusCode();
 

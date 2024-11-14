@@ -9,5 +9,4 @@ public class TestData {
     private BuildType buildType;
     private SourceProject sourceProject;
     private BuildQueue buildQueue;
-    //private Properties properties;
 }

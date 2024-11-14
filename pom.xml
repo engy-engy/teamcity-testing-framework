@@ -18,6 +18,7 @@
         <rest-assured.version>5.1.1</rest-assured.version>
         <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.17.2</jackson.version>
+        <selenide.version>7.4.3</selenide.version>
     </properties>
 
     <dependencies>
@@ -91,6 +92,11 @@
             <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>selenide</artifactId>
+            <version>${selenide.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -116,6 +122,41 @@
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
                 <version>2.12.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <!-- Очистка build -->
+                        <fileset>
+                            <directory>${project.basedir}/build</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                        </fileset>
+                        <!-- Очистка build.reports.tests -->
+                        <fileset>
+                            <directory>${project.build.directory}/build.reports.tests</directory>
+                            <includes>
+                                <include>*.html</include>
+                                <include>*.png</include>
+                            </includes>
+                        </fileset>
+                        <!-- Очистка allure-results -->
+                        <fileset>
+                            <directory>${project.basedir}/allure-results</directory>
+                        </fileset>
+                        <!-- Очистка target -->
+                        <fileset>
+                            <directory>${project.basedir}/target</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
             </plugin>
         </plugins>
     </build>
