@@ -25,13 +25,6 @@ jobs:
     with:
       package: ui
 
-  publish-results:
-    needs: [ automation-api, automation-ui ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Publish results
-        uses: ./.github/workflows/publish-results.yml
-
   manual-prod-approval:
     needs: [publish-results ]
     runs-on: ubuntu-latest
