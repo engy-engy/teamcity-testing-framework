@@ -73,11 +73,13 @@ jobs:
           allure_results: target/allure-results
           subfolder: ${{ inputs.package }}
 
+  publish-results:
+    needs: run-tests  # Этот шаг выполняется только после завершения run-tests
+    runs-on: ubuntu-latest
+    steps:
       # Создаем пустую ветку gh-pages на основе инструкции https://gist.github.com/ramnathv/2227408
       - name: Publish test report
-        needs: [run-api-tests, run-ui-tests]
         uses: peaceiris/actions-gh-pages@v3
-        if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
