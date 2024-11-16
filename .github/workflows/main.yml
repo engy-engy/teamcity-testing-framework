@@ -36,4 +36,5 @@ jobs:
   # Деплой фронтенда и бекенда на прод
   deploy-prod:
     needs: manual-prod-approval
+    runs: ubuntu-latest
     uses: ./.github/workflows/deploy-prod.yml
