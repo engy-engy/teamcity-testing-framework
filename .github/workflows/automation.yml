@@ -69,8 +69,8 @@ jobs:
         if: always()
         with:
           gh_pages: gh-pages
-          allure_results: target/allure-results
           allure_history: allure-history
+          allure_results: target/allure-results
           subfolder: ${{ inputs.package }}
 
       # Создаем пустую ветку gh-pages на основе инструкции https://gist.github.com/ramnathv/2227408
