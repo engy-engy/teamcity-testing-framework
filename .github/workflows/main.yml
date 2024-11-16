@@ -57,7 +57,7 @@ jobs:
           publish_dir: allure-history
 
   manual-prod-approval:
-    needs: [ automation-api, automation-ui, publish-results ]
+    needs: [publish-results ]
     runs-on: ubuntu-latest
     environment: 'prod'
     steps:
