@@ -27,7 +27,7 @@ jobs:
 
   manual-prod-approval:
     needs: [ automation-api, automation-ui ]
-    runs: ubuntu-latest
+    runs-on: ubuntu-latest
     environment: 'prod'
     steps:
       - name: Approve backend and frontend to production
@@ -36,5 +36,4 @@ jobs:
   # Деплой фронтенда и бекенда на прод
   deploy-prod:
     needs: manual-prod-approval
-    runs: ubuntu-latest
     uses: ./.github/workflows/deploy-prod.yml
