@@ -2,16 +2,17 @@ name: Deploy backend
 
 on: workflow_call
 
-# Примерные степы, как может выглядеть пайплайн бекенда
+# Это лишь примерные степы, как может выглядеть пайплайн бекенда
 jobs:
   build:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Build backend
-        run: echo Собирается билд бекенда (прогоняются unit тесты), формируется и публикуется docker image
+        run: echo Собирается билд бекенда (прогоняются юнит тетсы при сборке), формируется и публикуется Docker образ
+
   deploy-stage:
     needs: build
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy backend to stage/review app
-        run: echo Происходит деплой бекенда
+        run: echo Просиходит деплой бекенда

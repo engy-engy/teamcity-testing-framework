@@ -1,4 +1,4 @@
-name: Run test
+name: Run tests
 
 on:
   workflow_call:
@@ -17,10 +17,10 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-verison: '17'
+          java-version: '17'
           distribution: 'zulu'
 
-      - name: Validate checkstyle
+      - name: Validate Checkstyle
         run: ./mvnw validate
 
   run-tests:
@@ -29,9 +29,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: ./.github/actions/teamcity-setup
+      - name: TeamCity Setup
+        uses: ./.github/actions/teamcity-setup
 
       - name: Run tests
         continue-on-error: true
-        # Указываем группу чтобы не запустить тесты связанные с setup teamcity
-        run: ./mvnw test -Dtest='com.example.teamcity.${{inputs.package}}.**' -Dgroups=Regression
+        # Указываем группу, чтобы не запустить тесты, связанные с сетапом TeamCity
+        run: ./mvnw test -Dtest='com.example.teamcity.${{ inputs.package }}.**' -Dgroups=Regression

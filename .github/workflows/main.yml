@@ -13,10 +13,10 @@ jobs:
 
   # Прогоняются API тесты
   automation-api:
-      needs: [ backend, frontend ]
-      uses: ./.github/workflows/automation.yml
-      with:
-        package: api
+    needs: [ backend, frontend ]
+    uses: ./.github/workflows/automation.yml
+    with:
+      package: api
 
   # Прогоняются UI тесты
   automation-ui:
