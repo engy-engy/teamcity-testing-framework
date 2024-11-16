@@ -1,0 +1,41 @@
+name: Publish results
+
+on: workflow_call
+
+jobs:
+  load-history:
+    runs-on: ubuntu-latest
+    steps:
+      # Загружаем историю Allure Report с специальной ветки gh-pages (https://allurereport.org/docs/integrations-github/)
+      - name: Load test report history
+        uses: actions/checkout@v2
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+  build-report:
+    needs: load-history
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: target/allure-results
+          subfolder: ${{ inputs.package }}
+
+  publish-report:
+    needs: load-history
+    runs-on: ubuntu-latest
+    steps:
+      # Создаем пустую ветку gh-pages на основе инструкции https://gist.github.com/ramnathv/2227408
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
