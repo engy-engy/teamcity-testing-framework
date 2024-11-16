@@ -9,7 +9,7 @@ runs:
         java-version: '17'
         distribution: 'zulu'
 
-    # По умолчанию в ubuntu отсутствует команда ifconfig
+    # По умолчанию в ubuntu отсуствуе команда ifconfig
     - name: Install ifconfig
       shell: bash
       run: sudo apt-get update && sudo apt-get install -y net-tools
@@ -26,7 +26,7 @@ runs:
 
     - name: Pull Selenoid browsers
       shell: bash
-      # Парсим browsers.json и запуск docker pull для каждого браузера
+      # Парсить browsers.json и будет docker pull все браузеры
       run: |
         for browser in $(awk -F'"' '/"image": "/{print $4}' "config/browsers.json"); do
           docker pull $browser
@@ -34,38 +34,41 @@ runs:
 
     - name: Run Selenoid
       shell: bash
-      # Флаг -d запускает контейнер в фоновом режиме, если флаг не добавить, то никогда не перейдем к следующему step
+      # Флаг -d запускает контейнер в фоновом режиме, если мы этого не сделаем, мы никогда не перейдем к следующему степу
       run: |
-        docker run -d \
-         --name selenoid \
-         -p 4444:4444 \
-         -v /var/run/docker.sock:/var/run/docker.sock \
-         -v $(pwd)/config/:/etc/selenoid/:ro \
-         aerokube/selenoid:latest-release
+        docker run -d --name selenoid \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v $(pwd)/config/:/etc/selenoid/:ro \
+        -p 4444:4444 \
+        aerokube/selenoid:latest-release
 
-    # В этом step нет смысла на GitHub Actions, но для локальной отладки с act.app его можно использовать
+    # В этом степе нет смысла запуска на GitHub Actions, но для локальной отладки с act вы можете использовать
     - name: Run Selenoid UI
       shell: bash
       run: |
         docker run -d --name selenoid-ui \
-              -p 8080:8080 \
-              aerokube/selenoid-ui \
-              --selenoid-uri http://$HOST:4444
+        -p 8080:8080 \
+        aerokube/selenoid-ui:latest-release \
+        --selenoid-uri http://$HOST:4444
 
     - name: Run TeamCity Server
       shell: bash
-      # Flag -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в directory указанные в volume
+      # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
-        docker run -u 0 -d --name teamcity-server \
-          -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
-          -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs \
-          -p 8111:8111 \
-          jetbrains/teamcity-server:2023.11.1
+        docker run -u 0 -d --name teamcity-server  \
+        -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
+        -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
+        -p 8111:8111 \
+        jetbrains/teamcity-server:2023.11.1
 
-    - name: Setup Teamcity server
+    - name: Cat config.properties
       shell: bash
-      # Настройка сервера при первом запуске (принятие лицензии, выбор БД и т. д.)
-      run: ./mvnw clean test -Dtest=SetupServerTest#setupTeamCityServerTest allure:serve
+      run: cat src/main/resources/config.properties
+
+    - name: Setup TeamCity server
+      shell: bash
+      # Настройка сервера при первом запуске (принятие лицензии, выбор базы данных и тд), реализованная в виде теста
+      run: ./mvnw clean test -Dtest=SetupServerTest#setupTeamCityServerTest
 
     - name: Setup superUserToken environment variable
       shell: bash
