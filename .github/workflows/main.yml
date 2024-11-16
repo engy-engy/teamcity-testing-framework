@@ -28,7 +28,8 @@ jobs:
   publish-results:
     needs: [ automation-api, automation-ui ]
     steps:
-      uses: ./.github/workflows/publish-results.yml
+      - name: Publish results
+        uses: ./.github/workflows/publish-results.yml
 
   manual-prod-approval:
     needs: [publish-results ]
