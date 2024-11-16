@@ -27,7 +27,6 @@ jobs:
 
   publish-results:
     needs: [ automation-api, automation-ui ]
-    runs-on: ubuntu-latest
     steps:
       uses: ./.github/workflows/publish-results.yml
 
