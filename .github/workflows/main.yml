@@ -25,6 +25,21 @@ jobs:
     with:
       package: ui
 
+  publish-results:
+    needs: [ automation-api, automation-ui ]
+    runs-on: ubuntu-latest
+    steps:
+      # Добавьте шаги из publish-results.yml
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish test results
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
   manual-prod-approval:
     needs: [publish-results ]
     runs-on: ubuntu-latest
