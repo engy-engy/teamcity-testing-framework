@@ -3,6 +3,7 @@ package com.example.teamcity.ui.pages.admin;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Selenide.$;
@@ -22,6 +23,7 @@ public class CreateBuildConfigurationPage extends CreateBasePage {
         return this;
     }
 
+    @Step("Open create build configuration page")
     public static CreateBuildConfigurationPage open(String projectId) {
         return Selenide.open(CREATE_URL.formatted(projectId, BUILD_TYPE_MENU_SHOW_MODE), CreateBuildConfigurationPage.class);
     }

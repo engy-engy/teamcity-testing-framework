@@ -2,6 +2,7 @@ package com.example.teamcity.ui.pages;
 
 import com.codeborne.selenide.*;
 import com.example.teamcity.ui.elements.BuildProjectElement;
+import io.qameta.allure.Step;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class BuildsPage extends BasePage{
     private SelenideElement header = $(".ProjectPageHeader__header--Z3");
 
     public SelenideElement runBuildButton = $("button[data-test='run-build']");
-
+    @Step("Open build page")
     public static BuildsPage open(String projectName) {
         return Selenide.open(BUILDS_URL.formatted(projectName), BuildsPage.class);
     }
