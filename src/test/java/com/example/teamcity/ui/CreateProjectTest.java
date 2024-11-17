@@ -22,7 +22,7 @@ public class CreateProjectTest extends BaseUiTest {
 
         CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(), true);
 
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
         var createdProject = superUserCheckRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
@@ -44,11 +44,10 @@ public class CreateProjectTest extends BaseUiTest {
         step("Open Create Project Page (http://localhost:8111/admin/createObjectMenu.html)");
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject("", testData.getBuildType().getName());
+                .setupProject("", testData.getBuildType().getName(),false);
 
         step("Check that error appears `Project name must not be empty`");
         softy.assertEquals(errorElement.text(),"Project name must not be empty");
-
     }
 
     @Test(description = "User should not be able to create project with same name", groups = {"Negative"})
@@ -60,7 +59,7 @@ public class CreateProjectTest extends BaseUiTest {
 
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),false);
 
         softy.assertEquals(errorElement.text(),"Project with this name already exists: %s"
                 .formatted(testData.getProject().getName(), project.getName()));
