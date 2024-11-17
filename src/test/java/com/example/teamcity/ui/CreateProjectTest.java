@@ -29,10 +29,11 @@ public class CreateProjectTest extends BaseUiTest {
         softy.assertNotNull(createdProject);
         TestDataStorage.getStorage().addCreatedEntity(PROJECTS, createdProject);
 
+
         step("Check that project is visible on Project Page (http://localhost:8111/favorite/projects)");
         var projectExist = ProjectsPage.open()
                 .getProjects().stream()
-                .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()));
+                .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()) );
         softy.assertTrue(projectExist);
     }
 
