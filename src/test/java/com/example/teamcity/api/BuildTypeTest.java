@@ -51,6 +51,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
         userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
+
         generate(BuildQueue.class);
         testData.getBuildQueue().getBuildType().setId(testData.getBuildType().getId());
 
