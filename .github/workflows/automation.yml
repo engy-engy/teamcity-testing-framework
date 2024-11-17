@@ -37,10 +37,6 @@ jobs:
         # Указываем группу, чтобы не запустить тесты, связанные с сетапом TeamCity
         run: ./mvnw test -Dtest='com.example.teamcity.${{ inputs.package }}.**' -Dgroups=Regression
 
-  run-report:
-    needs: run-tests
-    runs-on: ubuntu-latest
-    steps:
         # Создаем репорт с покрытием API тестов основанным на swagger документации
         # Документация: https://github.com/viclovsky/swagger-coverage
         # Обязательно добавить filter SwaggerCoverageRestAssured в RestAssured

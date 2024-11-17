@@ -4,7 +4,7 @@ on: workflow_call
 
 # Это лишь примерные степы, как может выглядеть пайплайн бекенда
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Build frontend
