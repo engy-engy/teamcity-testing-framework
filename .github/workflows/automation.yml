@@ -37,7 +37,7 @@ jobs:
         # Указываем группу, чтобы не запустить тесты, связанные с сетапом TeamCity
         run: ./mvnw test -Dtest='com.example.teamcity.${{ inputs.package }}.**' -Dgroups=Regression
 
-  run-swagger-coverage:
+  run-report:
     needs: run-tests
     runs-on: ubuntu-latest
     steps:
@@ -58,10 +58,7 @@ jobs:
           path: |
             swagger-coverage-report.html
             swagger-coverage-results.json
-  run-report:
-    needs: run-tests
-    runs-on: ubuntu-latest
-    steps:
+
       # Загружаем историю Allure Report с специальной ветки gh-pages (https://allurereport.org/docs/integrations-github/)
       - name: Load test report history
         uses: actions/checkout@v2

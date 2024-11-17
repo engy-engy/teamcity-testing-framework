@@ -17,7 +17,6 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test(description = "User should be able to create project", groups = {"Positive"})
     public void userCreateProjectTest() {
-
         step("Login as user");
         loginAs(testData.getUser());
 
@@ -28,13 +27,13 @@ public class CreateProjectTest extends BaseUiTest {
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
         var createdProject = superUserCheckRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
         softy.assertNotNull(createdProject);
+        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, createdProject);
 
         step("Check that project is visible on Project Page (http://localhost:8111/favorite/projects)");
         var projectExist = ProjectsPage.open()
                 .getProjects().stream()
                 .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()));
         softy.assertTrue(projectExist);
-        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, createdProject);
     }
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
