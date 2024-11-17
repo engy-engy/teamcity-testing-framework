@@ -39,7 +39,6 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
     public void userCreateProjectWithoutNameTest() {
-
         step("Login as user");
         loginAs(testData.getUser());
 
@@ -55,7 +54,6 @@ public class CreateProjectTest extends BaseUiTest {
 
     @Test(description = "User should not be able to create project with same name", groups = {"Negative"})
     public void userCreateProjectWithSameNameTest() {
-
         step("Login as user");
         loginAs(testData.getUser());
 
