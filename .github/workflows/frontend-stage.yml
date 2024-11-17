@@ -11,7 +11,7 @@ jobs:
         run: echo Собирается билд фронтенда \(прогоняются юнит тесты при сборке, запускаются линтеры\), формируется и публикуется Docker образ
 
   deploy-stage:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Deploy frontend to stage/review app

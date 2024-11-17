@@ -12,8 +12,6 @@ public class CreateProjectPage extends CreateBasePage {
 
     private SelenideElement projectNameInput = $("#projectName");
 
-    private SelenideElement progressLoader = $("#discoveryProgressContainer");
-
     private SelenideElement errorProjectName = $("#error_projectName");
 
     @Step("Open create project page")
