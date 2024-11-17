@@ -23,7 +23,7 @@ public class CreateProjectTest extends BaseUiTest {
 
         CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),true);
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
 
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
         var createdProject = superUserCheckRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
@@ -46,7 +46,7 @@ public class CreateProjectTest extends BaseUiTest {
         step("Open Create Project Page (http://localhost:8111/admin/createObjectMenu.html)");
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject("", testData.getBuildType().getName(), false);
+                .setupProject("", testData.getBuildType().getName());
 
         step("Check that error appears `Project name must not be empty`");
         softy.assertEquals(errorElement.text(),"Project name must not be empty");
@@ -63,7 +63,7 @@ public class CreateProjectTest extends BaseUiTest {
 
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(), false);
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName());
 
         softy.assertEquals(errorElement.text(),"Project with this name already exists: %s"
                 .formatted(testData.getProject().getName(), project.getName()));

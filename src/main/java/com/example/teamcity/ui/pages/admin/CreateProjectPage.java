@@ -26,15 +26,10 @@ public class CreateProjectPage extends CreateBasePage {
         return this;
     }
 
-    public SelenideElement setupProject(String projectName, String buildTypeName, boolean waitForLoading) {
+    public SelenideElement setupProject(String projectName, String buildTypeName) {
         projectNameInput.val(projectName);
         buildTypeNameInput.val(buildTypeName);
         proceedButton.click();
-
-        if (waitForLoading) {
-            progressLoader.shouldBe(attribute("style", "display: none;"));
-            return null;
-        }
         return errorProjectName;
     }
 }
