@@ -82,7 +82,7 @@ jobs:
 
   # Ожидание подтверждения для деплоя в прод
   manual-prod-approval:
-    needs: [ automation-api, automation-ui ]
+    needs: [ collect-reports ]
     runs-on: ubuntu-latest
     environment: 'prod'
     steps:
