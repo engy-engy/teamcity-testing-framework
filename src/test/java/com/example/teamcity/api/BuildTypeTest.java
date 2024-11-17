@@ -77,7 +77,6 @@ public class BuildTypeTest extends BaseApiTest {
         });
     }
 
-
     @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
     public void userCreatesTwoBuildTypeWithTheSameIdTest() {
         var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
