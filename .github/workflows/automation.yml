@@ -73,16 +73,6 @@ jobs:
           allure_results: target/allure-results
           subfolder: ${{ inputs.package }}
 
-
-      # Перед пушем форсируем обновление ветки gh-pages
-      - name: Force push to gh-pages
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add -A
-          git commit -m "Update Allure report"
-          git push --force origin gh-pages
-
       # Создаем пустую ветку gh-pages на основе инструкции https://gist.github.com/ramnathv/2227408
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
