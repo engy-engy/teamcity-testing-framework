@@ -55,12 +55,15 @@ public class CreateProjectTest extends BaseUiTest {
         step("Login as user");
         loginAs(testData.getUser());
 
+        step("Create project");
         var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
+        step("Create project with same name");
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
                 .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),false);
 
+        step("Check that error appears `Project with this name already exists`");
         softy.assertEquals(errorElement.text(),"Project with this name already exists: %s"
                 .formatted(testData.getProject().getName(), project.getName()));
     }
