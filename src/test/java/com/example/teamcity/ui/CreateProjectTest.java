@@ -47,7 +47,6 @@ public class CreateProjectTest extends BaseUiTest {
                 .setupProject("", testData.getBuildType().getName(),false);
 
         step("Check that error appears `Project name must not be empty`");
-
         softy.assertEquals(errorElement.text(),"Project name must not be empty");
     }
 
