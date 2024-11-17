@@ -65,7 +65,8 @@ public class CreateProjectTest extends BaseUiTest {
                 .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),false);
 
         step("Check that error appears `Project with this name already exists`");
-        softy.assertEquals(errorElement.text(),"Project with this name already exists: %s"
-                .formatted(testData.getProject().getName(), project.getName()));
+        softy.assertEquals(errorElement.text(),
+                "Project with this name already exists: %s"
+                        .formatted(testData.getProject().getName(), project.getName()));
     }
 }
