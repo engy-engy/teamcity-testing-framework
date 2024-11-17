@@ -50,7 +50,6 @@ public class BuildTypeTest extends BaseApiTest {
                 new Property("use.custom.script", "true"))));
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
-
         userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
 
         generate(BuildQueue.class);
