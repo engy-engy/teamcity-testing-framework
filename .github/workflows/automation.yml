@@ -73,10 +73,14 @@ jobs:
           allure_results: target/allure-results
           subfolder: ${{ inputs.package }}
 
+      - name: Fetch remote changes
+        run: git pull --rebase origin gh-pages
+
       # Создаем пустую ветку gh-pages на основе инструкции https://gist.github.com/ramnathv/2227408
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
         if: always()
+        continue-on-error: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
