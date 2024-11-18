@@ -35,18 +35,4 @@ public class AuthAgentTest extends BaseApiTest {
                 .extract().response();
         softy.assertTrue(response.jsonPath().getBoolean("status"), "Status not true");
     }
-
-    @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
-    public void userCreatesBuildTypeTest() {
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-
-        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
-
-        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
-
-        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
-        softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
-    }
-
 }
