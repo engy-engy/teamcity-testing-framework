@@ -82,19 +82,10 @@ runs:
       shell: bash
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
-        docker run -u 0 -d -e SERVER_URL="http://$HOST:8111" \  
-          -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
-          jetbrains/teamcity-agent
-
-    - name: Inspect TeamCity Agent Logs
-      shell: bash
-      run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
-
-    - name: Inspect TeamCity Agent Logs
-      shell: bash
-      run: |
-        AGENT_ID=$(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
-        docker logs $AGENT_ID
+        docker run -u 0 -d \
+        -e SERVER_URL="http://$HOST:8111" \
+        -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
+        jetbrains/teamcity-agent
 
     - name: Setup TeamCity Agent
       shell: bash
