@@ -56,8 +56,8 @@ runs:
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
         docker run -u 0 -d --name teamcity-server  \
-        -v $(pwd)/teamcity-server/datadir:/data/teamcity_server/datadir \
-        -v $(pwd)/teamcity-server/logs:/opt/teamcity/logs  \
+        -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
+        -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
         -p 8111:8111 \
         jetbrains/teamcity-server:2023.11.1
 
@@ -78,10 +78,6 @@ runs:
       shell: bash
       run: echo "superUserToken=$SUPER_USER_TOKEN" >> src/main/resources/config.properties
 
-    - name: Set host teamcity server
-      shell: bash
-      run: |
-        echo "HOST_SERVER_TEAMCITY=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' teamcity-server)" >> $GITHUB_ENV
 
     - name: Run TeamCity Agent
       shell: bash
@@ -96,6 +92,10 @@ runs:
       shell: bash
       # Аутентификация агента
       run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
+
+    - name: Check TeamCity Agent Logs
+      shell: bash
+      run: docker logs ps
 
     - name: Check TeamCity Agent Logs
       shell: bash
