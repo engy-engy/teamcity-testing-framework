@@ -86,10 +86,6 @@ runs:
           -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
           jetbrains/teamcity-agent
 
-    - name: Inspect Environment Variables
-      shell: bash
-      run: docker exec $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent") env
-
     - name: Inspect TeamCity Agent Logs
       shell: bash
       run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
@@ -104,3 +100,13 @@ runs:
       shell: bash
       # Аутентификация агента
       run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
+
+    - name: Inspect TeamCity Agent Logs
+      shell: bash
+      run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
+
+    - name: Inspect TeamCity Agent Logs
+      shell: bash
+      run: |
+        AGENT_ID=$(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
+        docker logs $AGENT_ID
