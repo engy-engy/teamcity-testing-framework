@@ -87,7 +87,7 @@ runs:
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
         docker run -u 0 -d  \
-        -e SERVER_URL="http://192.168.0.3:8111" \
+        -e SERVER_URL="http:/172.18.0.1:8111" \
         -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
         jetbrains/teamcity-agent
 
