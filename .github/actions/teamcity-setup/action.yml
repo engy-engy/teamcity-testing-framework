@@ -87,6 +87,14 @@ runs:
         -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
         jetbrains/teamcity-agent
 
+    - name: Check TeamCity Agent Logs
+      shell: bash
+      run: docker logs $(docker ps -qf "ancestor=jetbrains/teamcity-agent")
+
+    - name: Check TeamCity Server Logs
+      shell: bash
+      run: docker logs teamcity-server
+
     - name: Setup TeamCity Agent
       shell: bash
       # Аутентификация агента
