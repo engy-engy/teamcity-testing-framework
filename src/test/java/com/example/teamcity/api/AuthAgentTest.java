@@ -34,22 +34,6 @@ public class AuthAgentTest extends BaseApiTest {
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().response();
         softy.assertTrue(response.jsonPath().getBoolean("status"), "Status not true");
-        /*
 
-        Response agents =  new UncheckedBase(Specifications.superUserSpec(), AGENTS_POOL)
-                .read("name:Default")
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().response();
-
-        var agentId = agents.jsonPath().getString("agents.agent[0].id");
-        testData.getAuthorizedInfo().setStatus(true);
-
-        Response response =  new UncheckedBase(Specifications.superUserSpec(), AGENTS)
-                .update("id:" + agentId + "/authorizedInfo", testData.getAuthorizedInfo())
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().response();
-        softy.assertTrue(response.jsonPath().getBoolean("status"), "Status not true");*/
     }
 }

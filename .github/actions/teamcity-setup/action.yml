@@ -95,7 +95,7 @@ runs:
 
     - name: Check TeamCity Agent Logs
       shell: bash
-      run: docker logs ps
+      run: docker ps
 
     - name: Check TeamCity Agent Logs
       shell: bash
