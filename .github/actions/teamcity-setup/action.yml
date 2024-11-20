@@ -41,7 +41,6 @@ runs:
       # Флаг -d запускает контейнер в фоновом режиме, если мы этого не сделаем, мы никогда не перейдем к следующему степу
       run: |
         docker run -d --name selenoid \
-        --network teamcity-network \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $(pwd)/config/:/etc/selenoid/:ro \
         -p 4444:4444 \
@@ -52,7 +51,6 @@ runs:
       shell: bash
       run: |
         docker run -d --name selenoid-ui \
-        --network teamcity-network \
         -p 8080:8080 \
         aerokube/selenoid-ui:latest-release \
         --selenoid-uri http://$HOST:4444
@@ -61,10 +59,9 @@ runs:
       shell: bash
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
-        docker run -u 0 -d --name teamcity-server \
-        --network teamcity-network \
+        docker run -u 0 -d --name teamcity-server  \
         -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
-        -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs \
+        -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
         -p 8111:8111 \
         jetbrains/teamcity-server:2023.11.1
 
@@ -85,21 +82,17 @@ runs:
       shell: bash
       run: echo "superUserToken=$SUPER_USER_TOKEN" >> src/main/resources/config.properties
 
-    - name: Run TeamCity Agent
-      shell: bash
-      # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
-      run: |
-        docker run -u 0 -d --name teamcity-agent \
-        --network teamcity-network \
-        -e SERVER_URL="http://$HOST:8111" \
-        -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
-        jetbrains/teamcity-agent
+#    - name: Run TeamCity Agent
+#      shell: bash
+#      # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
+#      run: |
+#        docker run -u 0 -d \
+#        -e SERVER_URL="http://$HOST:8111" \
+#        -v $(pwd)/tmp/teamcity-agent/conf:/data/teamcity_agent/conf \
+#        jetbrains/teamcity-agent
+#
+#    - name: Setup TeamCity Agent
+#      shell: bash
+#      # Аутентификация агента
+#      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
 
-    - name: Setup TeamCity Agent
-      shell: bash
-      # Аутентификация агента
-      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
-
-    - name: Inspect TeamCity Agent Logs
-      shell: bash
-      run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
