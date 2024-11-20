@@ -78,7 +78,7 @@ runs:
       shell: bash
       run: echo "superUserToken=$SUPER_USER_TOKEN" >> src/main/resources/config.properties
 
-    - name:
+    - name: Set host teamcity server
       shell: bash
       run: |
         echo "HOST_SERVER_TEAMCITY=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' teamcity-server)" >> $GITHUB_ENV
@@ -92,6 +92,11 @@ runs:
         -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
         jetbrains/teamcity-agent
 
+    - name: Setup TeamCity Agent
+      shell: bash
+      # Аутентификация агента
+      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
+
     - name: Check TeamCity Agent Logs
       shell: bash
       run: docker logs $(docker ps -qf "ancestor=jetbrains/teamcity-agent")
@@ -100,8 +105,4 @@ runs:
       shell: bash
       run: docker logs $(docker ps -qf "ancestor=jetbrains/teamcity-server:2023.11.1")
 
-    - name: Setup TeamCity Agent
-      shell: bash
-      # Аутентификация агента
-      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
 
