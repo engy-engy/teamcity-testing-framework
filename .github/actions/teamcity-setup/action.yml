@@ -14,10 +14,6 @@ runs:
       shell: bash
       run: sudo apt-get update && sudo apt-get install -y net-tools
 
-    - name: Create Docker network
-      shell: bash
-      run: docker network create teamcity-network
-
     - name: Set up host environment variable
       shell: bash
       # Команда для определения ip адреса для обращения из другого контейнера в документации Selenoid UI: https://aerokube.com/selenoid-ui/latest/
@@ -60,8 +56,8 @@ runs:
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
         docker run -u 0 -d --name teamcity-server  \
-        -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
-        -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
+        -v $(pwd)/teamcity-server/datadir:/data/teamcity_server/datadir \
+        -v $(pwd)/teamcity-server/logs:/opt/teamcity/logs  \
         -p 8111:8111 \
         jetbrains/teamcity-server:2023.11.1
 
@@ -87,7 +83,7 @@ runs:
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
         docker run -u 0 -d  \
-        -e SERVER_URL="http:/172.18.0.1:8111" \
+        -e SERVER_URL="http:/$HOST:8111" \
         -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
         jetbrains/teamcity-agent
 
