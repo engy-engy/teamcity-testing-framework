@@ -90,3 +90,7 @@ runs:
       shell: bash
       # Аутентификация агента
       run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
+
+    - name: Inspect TeamCity Agent Logs
+      shell: bash
+      run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
