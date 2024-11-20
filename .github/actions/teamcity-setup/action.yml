@@ -96,8 +96,8 @@ runs:
       shell: bash
       run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
 
-    - name: Inspect TeamCity Agent Logs
+    - name: Inspect TeamCity Agent server
       shell: bash
       run: |
-        AGENT_ID=$(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
-        docker logs $AGENT_ID
+        SERVER_ID=$(docker ps -q --filter "ancestor=teamcity-server")
+        docker logs $SERVER_ID
