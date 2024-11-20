@@ -1,10 +1,5 @@
 package com.example.teamcity.api;
 
-import com.example.teamcity.api.enums.Endpoint;
-import com.example.teamcity.api.models.BuildType;
-import com.example.teamcity.api.models.Project;
-import com.example.teamcity.api.models.agents.Agents;
-import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import io.restassured.response.Response;
