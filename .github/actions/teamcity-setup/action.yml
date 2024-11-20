@@ -94,3 +94,13 @@ runs:
     - name: Inspect TeamCity Agent Logs
       shell: bash
       run: docker logs $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
+
+    - name: Inspect Environment Variables
+      shell: bash
+      run: docker exec $(docker ps -q --filter "ancestor=jetbrains/teamcity-agent") env
+
+    - name: Inspect TeamCity Agent Logs
+      shell: bash
+      run: |
+        AGENT_ID=$(docker ps -q --filter "ancestor=jetbrains/teamcity-agent")
+        docker logs $AGENT_ID
