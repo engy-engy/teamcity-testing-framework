@@ -78,12 +78,17 @@ runs:
       shell: bash
       run: echo "superUserToken=$SUPER_USER_TOKEN" >> src/main/resources/config.properties
 
+    - name:
+      shell: bash
+      run: |
+        echo "HOST_SERVER_TEAMCITY=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' teamcity-server)" >> $GITHUB_ENV
+
     - name: Run TeamCity Agent
       shell: bash
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
         docker run -u 0 -d  \
-        -e SERVER_URL="http:/$HOST:8111" \
+        -e SERVER_URL="http:/HOST_SERVER_TEAMCITY:8111" \
         -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
         jetbrains/teamcity-agent
 
