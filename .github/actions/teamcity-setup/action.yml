@@ -84,7 +84,7 @@ runs:
       # Флаг -u 0 запускает контейнер от имени root, чтобы был доступ к записи файлов в директории, которые указаны в volume.
       run: |
         docker run -u 0 -d  \
-        -e SERVER_URL="http:/$HOST:8111" \
+        -e SERVER_URL="http://$HOST:8111" \
         -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
         jetbrains/teamcity-agent
 
@@ -93,7 +93,7 @@ runs:
       # Аутентификация агента
       run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
 
-    - name: Check TeamCity Agent Logs
+    - name: Get pods with docker
       shell: bash
       run: docker ps
 
