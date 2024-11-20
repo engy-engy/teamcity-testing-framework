@@ -93,7 +93,7 @@ runs:
 
     - name: Check TeamCity Server Logs
       shell: bash
-      run: docker logs teamcity-server
+      run: docker logs $(docker ps -qf "ancestor=jetbrains/teamcity-server:2023.11.1")
 
     - name: Setup TeamCity Agent
       shell: bash
