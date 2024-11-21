@@ -23,17 +23,18 @@ public class AuthAgentTest extends BaseApiTest {
 
         try {
             agentId = await().atMost(60, TimeUnit.SECONDS).until(() -> {
-                Response agent = new UncheckedBase(Specifications.superUserSpec(), AGENTS)
+                Response agentResponse = new UncheckedBase(Specifications.superUserSpec(), AGENTS)
                         .read("?locator=authorized:any")
                         .then()
                         .assertThat().statusCode(HttpStatus.SC_OK)
                         .extract().response();
-                String rawId = agent.jsonPath().getString("agent[0].id");
-                boolean isValid = rawId != null && !rawId.isEmpty();
-                return isValid ? rawId : null;
+
+                String rawId = agentResponse.jsonPath().getString("agent[0].id");
+
+                return rawId != null && !rawId.isEmpty() ? rawId : null;
             }, Objects::nonNull);
         } catch (ConditionTimeoutException e) {
-            Assert.fail("Не удалось получить агент ID в течение 60 секунд", e);
+            Assert.fail("Не удалось получить ID агента в течение 60 секунд", e);
         }
 
         Response response =  new UncheckedBase(Specifications.superUserSpec(), AGENTS)
