@@ -11,15 +11,14 @@ import static com.example.teamcity.api.enums.Endpoint.*;
 public class AuthAgentTest extends BaseApiTest {
     @Test(groups = {"Setup"})
     public void authAgentTest() {
+        testData.getAuthorizedInfo().setStatus(true);
 
-        Response listAgentsPool =  new UncheckedBase(Specifications.superUserSpec(), AGENTS)
+        Response listAgentsPool = new UncheckedBase(Specifications.superUserSpec(), AGENTS)
                 .read("?locator=authorized:any")
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().response();
         var agentId = listAgentsPool.jsonPath().getString("agent[0].id");
-
-        testData.getAuthorizedInfo().setStatus(true);
 
         Response response =  new UncheckedBase(Specifications.superUserSpec(), AGENTS)
                 .update("id:" + agentId + "/authorizedInfo", testData.getAuthorizedInfo())
