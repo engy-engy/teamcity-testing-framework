@@ -1,6 +1,5 @@
-package com.example.teamcity.api.models.agents;
+package com.example.teamcity.api.models;
 
-import com.example.teamcity.api.models.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Agent extends BaseModel {
+public class Agents extends BaseModel {
 
-    private int id;
+    private int count;
 
-    private String name;
+    private Agent[] agent;
 
 }

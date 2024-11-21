@@ -128,3 +128,23 @@ Accept: application/json
 GET http://@{{host}}:{{port}}/app/rest/swagger.json
 Accept: application/json
 Authorization: Basic admin admin
+
+
+
+### Get any agents
+# @no-cookie-jar
+GET http://{{host}}:{{port}}/app/rest/agents?locator=authorized:any
+Accept: application/json
+Authorization: Basic test_baagyaeint 1234qwer
+
+### Auth agent by id
+# @no-cookie-jar
+PUT http://{{host}}:{{port}}/httpAuth/app/rest/agents/id:11/authorizedInfo
+Accept: application/json
+Content-Type: application/json
+Authorization: Basic test_baagyaeint 1234qwer
+
+{
+  "status": true
+}
+

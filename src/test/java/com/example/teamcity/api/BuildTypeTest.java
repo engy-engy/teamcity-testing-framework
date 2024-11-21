@@ -181,4 +181,5 @@ public class BuildTypeTest extends BaseApiTest {
                 "Expected error message not found in the response for user2.");
         superUserCheckRequests.getRequest(PROJECTS).delete(projectId1);
     }
+
 }

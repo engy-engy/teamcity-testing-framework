@@ -13,6 +13,7 @@ import static io.qameta.allure.Allure.step;
 
 @Test(groups = {"Regression"})
 public class CreateBuildTypeTest extends BaseUiTest {
+
     private static final String REPO_WORKSHOPS_URL = "https://github.com/engy-engy/workshops";
     private static final String REPO_TEAM_CITY_URL = "https://github.com/engy-engy/teamcity-testing-framework";
 
@@ -78,4 +79,5 @@ public class CreateBuildTypeTest extends BaseUiTest {
         softy.assertEquals(errorElement.text(),"Build configuration with name \"%s\" already exists in project: \"%s\""
                 .formatted(testData.getBuildType().getName(), project.getName()));
     }
+
 }

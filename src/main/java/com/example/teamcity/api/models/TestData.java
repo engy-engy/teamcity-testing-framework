@@ -1,6 +1,5 @@
 package com.example.teamcity.api.models;
 
-import com.example.teamcity.api.models.agents.AuthorizedInfo;
 import lombok.Data;
 
 @Data

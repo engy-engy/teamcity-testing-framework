@@ -46,4 +46,5 @@ public class RunBuildTypeTest extends BaseUiTest {
             softy.assertTrue(element.getText().contains("Hello, World!"), "Текст 'Hello, World!' не найден в элементе");
         });
     }
+
 }

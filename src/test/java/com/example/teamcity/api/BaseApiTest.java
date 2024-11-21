@@ -12,8 +12,11 @@ import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
 // Сюда складываем то что нужно для апи теста
 public class BaseApiTest extends BaseTest {
+
     public final ServerAuthRequest serverAuthRequest = new ServerAuthRequest(Specifications.superUserSpec());
+
     private AuthModules authModules;
+
     private boolean perProjectPermissions;
 
     @BeforeSuite(alwaysRun = true)
@@ -38,4 +41,5 @@ public class BaseApiTest extends BaseTest {
                 .modules(authModules)
                 .build());
     }
+
 }

@@ -1,6 +1,6 @@
-package com.example.teamcity.api.models.agents;
+package com.example.teamcity.api.models;
 
-import com.example.teamcity.api.models.BaseModel;
+import com.example.teamcity.api.annotations.Parameterizable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Agents extends BaseModel {
+public class AuthorizedInfo extends BaseModel {
 
-    private int count;
-
-    private Agent[] agent;
+    @Parameterizable
+    private boolean status;
 
 }

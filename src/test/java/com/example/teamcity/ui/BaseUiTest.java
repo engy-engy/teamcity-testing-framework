@@ -16,6 +16,7 @@ import java.util.Map;
 import static com.example.teamcity.api.enums.Endpoint.USERS;
 
 public class BaseUiTest extends BaseTest {
+
     @BeforeSuite(alwaysRun = true)
     public void setupUiTest() {
         Configuration.browser = Config.getProperty("browser");
@@ -40,4 +41,5 @@ public class BaseUiTest extends BaseTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         LoginPage.open().login(testData.getUser());
     }
+
 }

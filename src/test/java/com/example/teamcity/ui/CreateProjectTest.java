@@ -69,4 +69,5 @@ public class CreateProjectTest extends BaseUiTest {
                 "Project with this name already exists: %s"
                         .formatted(testData.getProject().getName(), project.getName()));
     }
+
 }

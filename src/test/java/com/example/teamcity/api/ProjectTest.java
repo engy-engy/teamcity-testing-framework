@@ -83,7 +83,7 @@ public class ProjectTest extends BaseApiTest{
         testData.getProject().setValue(updatedProjectValue);
 
         new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .update(testData.getProject().getId(), testData.getProject(),updatedProjectName)
+                .update(testData.getProject().getId(), testData.getProject(), updatedProjectName)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().response();
@@ -175,4 +175,5 @@ public class ProjectTest extends BaseApiTest{
                         + testData.getProject().getName()),
                 "Expected error message not found in the response.");
     }
+
 }

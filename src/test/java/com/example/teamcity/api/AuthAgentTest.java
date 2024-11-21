@@ -15,6 +15,7 @@ import static com.example.teamcity.api.enums.Endpoint.AGENTS;
 import static org.awaitility.Awaitility.await;
 
 public class AuthAgentTest extends BaseApiTest {
+
     @Test(groups = {"Setup"})
     public void authAgentTest() {
 
@@ -44,5 +45,6 @@ public class AuthAgentTest extends BaseApiTest {
                 .extract().response();
         softy.assertTrue(response.jsonPath().getBoolean("status"), "Status not true");
     }
+
 }
 

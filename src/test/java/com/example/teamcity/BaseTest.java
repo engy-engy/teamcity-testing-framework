@@ -11,6 +11,7 @@ import org.testng.asserts.SoftAssert;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
 public class BaseTest {
+
     protected SoftAssert softy;
     protected CheckedRequests superUserCheckRequests = new CheckedRequests(Specifications.superUserSpec());
     protected TestData testData;
@@ -33,4 +34,5 @@ public class BaseTest {
         softy.assertAll();
         TestDataStorage.getStorage().deleteCreatedEntities();
     }
+
 }

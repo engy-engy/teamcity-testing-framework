@@ -1,7 +1,7 @@
 package com.example.teamcity.api.enums;
 
 import com.example.teamcity.api.models.*;
-import com.example.teamcity.api.models.agents.Agents;
+import com.example.teamcity.api.models.Agents;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
