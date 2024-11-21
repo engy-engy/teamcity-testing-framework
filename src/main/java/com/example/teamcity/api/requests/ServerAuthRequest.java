@@ -6,6 +6,7 @@ import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
 public class ServerAuthRequest  {
+
     private static final String SERVER_AUTH_SETTINGS_URL = "/app/rest/server/authSettings";
 
     private RequestSpecification spec;
@@ -32,4 +33,5 @@ public class ServerAuthRequest  {
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(ServerAuthSettings.class);
     }
+
 }
