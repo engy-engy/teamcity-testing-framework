@@ -90,30 +90,3 @@ runs:
       shell: bash
       # Аутентификация агента
       run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
-
-    - name: Setup TeamCity Agent
-      shell: bash
-      # Аутентификация агента
-      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
-
-    - name: Setup TeamCity Agent
-      shell: bash
-      # Аутентификация агента
-      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
-
-    - name: Setup TeamCity Agent
-      shell: bash
-      # Аутентификация агента
-      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
-
-    - name: Get pods with docker
-      shell: bash
-      run: docker ps
-
-    - name: Check TeamCity Agent Logs
-      shell: bash
-      run: docker logs $(docker ps -qf "ancestor=jetbrains/teamcity-agent")
-
-    - name: Check TeamCity Server Logs
-      shell: bash
-      run: docker logs $(docker ps -qf "ancestor=jetbrains/teamcity-server:2023.11.1")
