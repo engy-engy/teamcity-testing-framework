@@ -14,5 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthModules extends BaseModel {
+
     private List<AuthModule> module;
+
 }

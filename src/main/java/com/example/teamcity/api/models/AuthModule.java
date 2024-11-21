@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthModule extends BaseModel {
+
     @Builder.Default
     private String name = "HTTP-Basic";
+
 }

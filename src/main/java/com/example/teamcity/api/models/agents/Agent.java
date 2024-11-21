@@ -17,4 +17,5 @@ public class Agent extends BaseModel {
     private int id;
 
     private String name;
+
 }

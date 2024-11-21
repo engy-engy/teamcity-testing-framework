@@ -15,13 +15,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Step extends BaseModel {
+
     private String id;
+
     @Random
     @Parameterizable
     private String name;
+
     @Builder.Default
     private String type = "simpleRunner";
+
     @Optional
     @Parameterizable
     private Properties properties;
+
 }

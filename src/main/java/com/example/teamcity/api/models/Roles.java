@@ -14,5 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Roles extends BaseModel {
+
     private List<Role> role;
+
 }

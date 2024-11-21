@@ -16,10 +16,13 @@ import lombok.NoArgsConstructor;
 public class User extends BaseModel {
 
     private String id;
+
     @Random
     private String username;
+
     @Parameterizable
     @Random
     private String password;
+
     private Roles roles;
 }

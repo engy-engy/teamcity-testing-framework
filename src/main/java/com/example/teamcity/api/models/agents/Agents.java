@@ -17,4 +17,5 @@ public class Agents extends BaseModel {
     private int count;
 
     private Agent[] agent;
+
 }

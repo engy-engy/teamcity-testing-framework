@@ -15,17 +15,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project extends BaseModel {
+
     @Random
     private String id;
+
     @Random
     private String name;
+
     @Optional
     @Parameterizable
     private SourceProject sourceProject;
+
     @Parameterizable
     @Optional
     private Boolean copyAllAssociatedSettings = Boolean.FALSE;
+
     @Parameterizable
     @Optional
     private String value;
+
 }

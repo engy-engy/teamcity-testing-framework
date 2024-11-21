@@ -16,4 +16,5 @@ public class ServerAuthSettings extends BaseModel{
     private Boolean perProjectPermissions;
 
     private AuthModules modules;
+
 }
