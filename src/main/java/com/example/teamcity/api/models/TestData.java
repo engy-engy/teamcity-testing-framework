@@ -17,4 +17,6 @@ public class TestData {
 
     private NewProjectDescription newProjectDescription;
 
+    private Build build;
+
 }

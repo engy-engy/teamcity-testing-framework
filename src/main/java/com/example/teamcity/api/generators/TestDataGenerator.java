@@ -77,6 +77,9 @@ public class TestDataGenerator {
                         }
                     } else if (field.isAnnotationPresent(Random.class) && String.class.equals(field.getType())) {
                         field.set(instance, RandomData.getString());
+                    } else if (field.isAnnotationPresent(Random.class) && long.class.equals(field.getType())) {
+                        // Генерация случайного long
+                        field.set(instance, RandomData.getLong());
                     } else if (BaseModel.class.isAssignableFrom(field.getType())) {
                         var finalParameters = parameters;
                         field.set(instance, generatedClass.orElseGet(() -> generate(

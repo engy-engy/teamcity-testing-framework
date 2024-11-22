@@ -1,7 +1,7 @@
 package com.example.teamcity.api;
 
-import com.example.teamcity.api.models.Project;
-import com.example.teamcity.api.models.SourceProject;
+import com.example.teamcity.api.generators.TestDataStorage;
+import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
@@ -11,8 +11,8 @@ import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
-import static com.example.teamcity.api.enums.Endpoint.USERS;
+import static com.example.teamcity.api.enums.Endpoint.*;
+import static com.example.teamcity.api.enums.PermRoles.PROJECT_ADMIN;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
 @Test(groups = {"Regression"})
@@ -169,4 +169,73 @@ public class ProjectTest extends BaseApiTest{
 
     }
 
+    @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
+    public void projectAdminCannotCreateSubprojectWithoutPermissionTest(){
+        var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        var project = testData.getProject();
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+
+        user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
+        superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
+
+        var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
+        var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
+        superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
+
+
+        generate(Project.class);
+        var response1 = userAuthSpec.getRequest(PROJECTS)
+                .create(testData.getProject())
+                .then()
+                .extract().response();
+
+        softy.assertThat(response1.asString())
+                .contains("You do not have \"Create subproject\" permission in project with internal id: _Root")
+                .contains("Access denied. Check the user has enough permissions to perform the operation.");
+
+        var response2 = userAuthSpec2.getRequest(PROJECTS)
+                .create(testData.getProject())
+                .then()
+                .extract().response();
+
+        softy.assertThat(response2.asString())
+                .contains("You do not have \"Create subproject\" permission in project with internal id: _Root")
+                .contains("Access denied. Check the user has enough permissions to perform the operation.");
+        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, project);
+    }
+
+    @Test(description = "Project admin should not be able to create build type for not their project ", groups = {"Negative","Roles "})
+    public void projectAdminCannotCreateBuildTypeForAnotherUserProjectTest(){
+        var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
+        superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
+
+        userAuthSpec.getRequest(BUILD_TYPES).create(testData.getBuildType());
+
+        var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
+        var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
+
+        user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + project.getId()));
+        superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
+
+        var buildType2 = generate(BuildType.class);
+        buildType2.getProject().setId(project2.getId());
+
+        var response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
+                .create(buildType2)
+                .then()
+                .extract().response();
+
+        softy.assertThat(response.asString())
+                .contains("You do not have enough permissions to edit project with id: " + project2.getId())
+                .contains("Access denied. Check the user has enough permissions to perform the operation.");
+
+    }
 }
