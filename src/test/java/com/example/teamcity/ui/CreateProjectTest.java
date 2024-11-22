@@ -27,14 +27,14 @@ public class CreateProjectTest extends BaseUiTest {
 
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
         var createdProject = superUserCheckRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
-        softy.assertNotNull(createdProject);
+        softy.assertThat(createdProject).isNotNull();
         TestDataStorage.getStorage().addCreatedEntity(PROJECTS, createdProject);
 
         step("Check that project is visible on Project Page (http://localhost:8111/favorite/projects)");
         var projectExist = ProjectsPage.open()
                 .getProjects().stream()
                 .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()) );
-        softy.assertTrue(projectExist);
+        softy.assertThat(projectExist).isTrue();
     }
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
@@ -48,7 +48,7 @@ public class CreateProjectTest extends BaseUiTest {
                 .setupProject("", testData.getBuildType().getName(),false);
 
         step("Check that error appears `Project name must not be empty`");
-        softy.assertEquals(errorElement.text(),"Project name must not be empty");
+        softy.assertThat(errorElement.text()).isEqualTo("Project name must not be empty");
     }
 
     @Test(description = "User should not be able to create project with same name", groups = {"Negative"})
@@ -65,9 +65,10 @@ public class CreateProjectTest extends BaseUiTest {
                 .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),false);
 
         step("Check that error appears `Project with this name already exists`");
-        softy.assertEquals(errorElement.text(),
-                "Project with this name already exists: %s"
-                        .formatted(testData.getProject().getName(), project.getName()));
+        softy.assertThat(errorElement.text())
+                .as("Проверка, что отображается сообщение об ошибке при создании проекта с одинаковым именем")
+                .isEqualTo("Project with this name already exists: %s".formatted(testData.getProject().getName()));
+
     }
 
 }

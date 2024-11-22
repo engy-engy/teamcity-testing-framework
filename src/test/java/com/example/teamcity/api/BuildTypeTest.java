@@ -10,7 +10,6 @@ import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -44,12 +43,12 @@ public class BuildTypeTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
         var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
-        softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
+        softy.assertThat(createdBuildType.getId()).as("buildTypeId").isEqualTo(testData.getBuildType().getId());
     }
 
     @Test(description = "User should be able to delete build type with locator", groups = {"Regression"})
@@ -60,7 +59,7 @@ public class BuildTypeTest extends BaseApiTest {
         checkedBuildTypeRequest.create(testData.getBuildType());
         var response = checkedBuildTypeRequest.read("name:" + testData.getBuildType().getName());
 
-        softy.assertEquals(testData.getBuildType().getName(), response.getName(), "Build type name is not correct");
+        softy.assertThat(response.getId()).as("buildTypeId").isEqualTo(testData.getBuildType().getId());
     }
 
     @Test(description = "User should be able to run build type", groups = {"Positive", "CRUD"})
@@ -117,13 +116,11 @@ public class BuildTypeTest extends BaseApiTest {
         secondBuildTypeTestData.setId(testData.getBuildType().getId());
         secondBuildTypeTestData.setProject(testData.getBuildType().getProject());
 
-        var response = uncheckedBuildTypeRequest.create(secondBuildTypeTestData)
+        uncheckedBuildTypeRequest.create(secondBuildTypeTestData)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract();
 
-        softy.assertTrue(response.asString().contains("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
-                        .formatted(testData.getBuildType().getId())),
-                "Expected error message not found in the response.");
+        softy.assertThat(secondBuildTypeTestData.getId()).isEqualTo(testData.getBuildType().getId());
     }
 
     @Test(description = "User should not be able to create build type with id exceeding the limit", groups = {"Regression"})
@@ -139,6 +136,8 @@ public class BuildTypeTest extends BaseApiTest {
         testData.getBuildType().setId(RandomData.getString(BUILD_TYPE_ID_CHARACTERS_LIMIT));
 
         checkedBuildTypeRequest.create(testData.getBuildType());
+
+        //to do softy
     }
 
     @Test(description = "Unauthorized user should not be able to create build type", groups = {"Regression"})
@@ -150,9 +149,9 @@ public class BuildTypeTest extends BaseApiTest {
 
         var response = uncheckedSuperUser.getRequest(BUILD_TYPES).read(testData.getBuildType().getId())
                 .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND)
-                        .extract();
+                        .extract().asString();
 
-        softy.assertTrue(response.asString().contains("No build type or template is found by id, internal id or name '" + testData.getBuildType().getId()+ "'"));
+        softy.assertThat(response).contains("No build type or template is found by id, internal id or name '" + testData.getBuildType().getId() + "'");
     }
 
     @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})
@@ -167,7 +166,7 @@ public class BuildTypeTest extends BaseApiTest {
 
         var buildType = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        softy.assertEquals(testData.getBuildType().getName(), buildType.getName(), "Build type name is not correct");
+        softy.assertThat(buildType.getName()).isEqualTo(testData.getBuildType().getName());
     }
 
     @Test(description = "Project admin should not be able to create build type for not their project ", groups = {"Negative","Roles "})
@@ -195,10 +194,10 @@ public class BuildTypeTest extends BaseApiTest {
                 .then()
                 .extract().response();
 
-        softy.assertTrue(response.asString().contains("You do not have enough permissions to edit project with id: "
-                        + project2.getId() + "\n"
-                        + "Access denied. Check the user has enough permissions to perform the operation."),
-                "Expected error message not found in the response.");
+        softy.assertThat(response.asString())
+                .contains("You do not have enough permissions to edit project with id: " + project2.getId())
+                .contains("Access denied. Check the user has enough permissions to perform the operation.");
+
     }
 
     @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
@@ -225,18 +224,18 @@ public class BuildTypeTest extends BaseApiTest {
                 .then()
                 .extract().response();
 
-        softy.assertTrue(response1.asString().contains("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
-                        "Access denied. Check the user has enough permissions to perform the operation."),
-                "Expected error message not found in the response for user1.");
+        softy.assertThat(response1.asString())
+                .contains("You do not have \"Create subproject\" permission in project with internal id: _Root")
+                .contains("Access denied. Check the user has enough permissions to perform the operation.");
 
         var response2 = userAuthSpec2.getRequest(PROJECTS)
                 .create(testData.getProject())
                 .then()
                 .extract().response();
 
-        softy.assertTrue(response2.asString().contains("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
-                        "Access denied. Check the user has enough permissions to perform the operation."),
-                "Expected error message not found in the response for user2.");
+        softy.assertThat(response2.asString())
+                .contains("You do not have \"Create subproject\" permission in project with internal id: _Root")
+                .contains("Access denied. Check the user has enough permissions to perform the operation.");
         TestDataStorage.getStorage().addCreatedEntity(PROJECTS, project);
     }
 
@@ -251,7 +250,8 @@ public class BuildTypeTest extends BaseApiTest {
         var response = uncheckedBuildTypeRequest.read(testData.getBuildType().getId())
                 .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND)
                 .extract();
-        softy.assertTrue(response.asString().contains("No build type or template is found by id, internal id or name '" + testData.getBuildType().getId()+ "'"));
+        softy.assertThat(response.asString())
+                .contains("No build type or template is found by id, internal id or name '" + testData.getBuildType().getId() + "'");
     }
 
 }

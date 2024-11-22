@@ -19,6 +19,7 @@
         <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.17.2</jackson.version>
         <selenide.version>7.4.3</selenide.version>
+        <assertj-core.version>3.26.3</assertj-core.version>
         <swagger-coverage-version>1.5.0</swagger-coverage-version>
     </properties>
 
@@ -108,8 +109,12 @@
             <artifactId>allure-rest-assured</artifactId>
             <version>${allure.version}</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -23,7 +23,7 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var project = userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-        softy.assertEquals(testData.getProject(), project);
+        softy.assertThat(project).isEqualTo(testData.getProject());
     }
 
     @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
@@ -32,7 +32,7 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
         var project = userAuthSpec.getRequest(PROJECTS).read("id:" + testData.getProject().getId());
-        softy.assertEquals(testData.getProject(), project);
+        softy.assertThat(testData.getProject()).isEqualTo(project);
     }
 
     @Test(description = "User should be able to get details project", groups = {"Positive", "CRUD"})
@@ -41,7 +41,7 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var project = userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
         var response = userAuthSpec.<Project>getRequest(PROJECTS).read("name:" + project.getName());
-        softy.assertEquals(response.getName(), testData.getProject().getName());
+        softy.assertThat(response.getName()).isEqualTo(testData.getProject().getName());
     }
 
     @Test(description = "User should be able to archived project", groups = {"Positive", "CRUD"})
@@ -62,7 +62,7 @@ public class ProjectTest extends BaseApiTest{
                 .extract().response();
 
         String responseBody = projectArchived.getBody().asString();
-        softy.assertEquals(responseBody, "true", "Expected response body to be 'true'");
+        softy.assertThat(responseBody).isEqualTo("true");
     }
 
     @Test(description = "User should be able to get data to status about archiving for project", groups = {"Positive", "CRUD"})
@@ -89,7 +89,7 @@ public class ProjectTest extends BaseApiTest{
                 .extract().response();
 
         boolean currentName = Boolean.parseBoolean(response.jsonPath().getString("archived"));
-        softy.assertEquals(currentName, true);
+        softy.assertThat(currentName).isEqualTo(true);
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})
@@ -105,8 +105,9 @@ public class ProjectTest extends BaseApiTest{
 
         var response = userAuthSpec.<Project>getRequest(PROJECTS).create(projectCopy);
 
-        softy.assertEquals(projectCopy.getId(), response.getId());
-        softy.assertEquals(projectCopy.getName(), response.getName());
+        softy.assertThat(projectCopy.getId()).isEqualTo(response.getId());
+        softy.assertThat(projectCopy.getName()).isEqualTo(response.getName());
+
     }
 
     @Test(description = "User should be able to delete project by id", groups = {"Positive", "CRUD"})
@@ -124,7 +125,7 @@ public class ProjectTest extends BaseApiTest{
                 .then()
                 .extract().response().statusCode();
 
-        softy.assertEquals(responseCode, HttpStatus.SC_NOT_FOUND);
+        softy.assertThat(responseCode).isEqualTo(HttpStatus.SC_NOT_FOUND);
     }
 
     @Test(description = "User should be able to delete project by locator", groups = {"Positive", "CRUD"})
@@ -146,7 +147,7 @@ public class ProjectTest extends BaseApiTest{
                 .then()
                 .extract().response().statusCode();
 
-        softy.assertEquals(responseCode, HttpStatus.SC_NOT_FOUND);
+        softy.assertThat(responseCode).isEqualTo(HttpStatus.SC_NOT_FOUND);
     }
 
     @Test(description = "User cannot be able to create project same id project", groups = {"Negative", "CRUD"})
@@ -162,9 +163,10 @@ public class ProjectTest extends BaseApiTest{
                 .then()
                 .extract().response();
 
-        softy.assertTrue(response.asString().contains("DuplicateProjectNameException: Project with this name already exists: "
-                        + testData.getProject().getName()),
-                "Expected error message not found in the response.");
+        softy.assertThat(response.asString())
+                .contains("DuplicateProjectNameException: Project with this name already exists: "
+                        + testData.getProject().getName());
+
     }
 
 }

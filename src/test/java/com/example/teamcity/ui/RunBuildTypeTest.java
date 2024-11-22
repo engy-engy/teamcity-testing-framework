@@ -43,7 +43,7 @@ public class RunBuildTypeTest extends BaseUiTest {
 
         step("Check that text `Hello, world!` exist in build logs");
         logResult.filter(Condition.text("Hello, World!")).forEach(element -> {
-            softy.assertTrue(element.getText().contains("Hello, World!"), "Текст 'Hello, World!' не найден в элементе");
+            softy.assertThat(element.getText()).contains("Hello, World!");
         });
     }
 

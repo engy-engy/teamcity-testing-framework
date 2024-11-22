@@ -33,13 +33,13 @@ public class CreateBuildTypeTest extends BaseUiTest {
 
         step("Check build type was successfully created with correct data on API level");
         var createdBuildTypeConfig = superUserCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("name:" + testData.getBuildType().getName());
-        softy.assertNotNull(createdBuildTypeConfig);
+        softy.assertThat(createdBuildTypeConfig).isNotNull();
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
         var buildsExist = BuildsPage.open(project.getId())
                 .getBuilds().stream()
                 .anyMatch(build -> build.getButton().text().equals(testData.getBuildType().getName()));
-        softy.assertTrue(buildsExist);
+        softy.assertThat(buildsExist).isTrue();
     }
 
     @Test(description = "User should not be able to create build type configuration without name", groups = {"Positive"})
@@ -57,7 +57,7 @@ public class CreateBuildTypeTest extends BaseUiTest {
                 .setupBuildTypeConfiguration("");
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
-        softy.assertEquals(errorElement.text(), "Build configuration name must not be empty");
+        softy.assertThat(errorElement.text()).isEqualTo("Build configuration name must not be empty");
     }
 
     @Test(description = "User should not be able to create build type configuration with same name", groups = {"Positive"})
@@ -76,8 +76,9 @@ public class CreateBuildTypeTest extends BaseUiTest {
                 .setupBuildTypeConfiguration(buildType.getName());
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
-        softy.assertEquals(errorElement.text(),"Build configuration with name \"%s\" already exists in project: \"%s\""
-                .formatted(testData.getBuildType().getName(), project.getName()));
+        softy.assertThat(errorElement.text())
+                .isEqualTo("Build configuration with name \"%s\" already exists in project: \"%s\""
+                        .formatted(testData.getBuildType().getName(), project.getName()));
     }
 
 }

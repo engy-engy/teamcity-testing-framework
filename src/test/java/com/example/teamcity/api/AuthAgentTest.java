@@ -43,7 +43,7 @@ public class AuthAgentTest extends BaseApiTest {
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().response();
-        softy.assertTrue(response.jsonPath().getBoolean("status"), "Status not true");
+        softy.assertThat(response.jsonPath().getBoolean("status")).isTrue();
     }
 
 }
