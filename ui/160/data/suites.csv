@@ -1,0 +1,2 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Fri Nov 22 15:59:55 GMT 2024","Fri Nov 22 16:00:04 GMT 2024","9255","Surefire suite","Surefire test","com.example.teamcity.api.AuthAgentTest","com.example.teamcity.api.AuthAgentTest","authAgentTest","authAgentTest",""
