@@ -39,8 +39,8 @@ public class BuildTypeTest extends BaseApiTest {
     }
 
 
-    @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
-    public void userCreatesBuildTypeTest() {
+    @Test(description = "User should be able to create build type with id", groups = {"Positive", "CRUD"})
+    public void userCreatesBuildTypeWithIdTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
@@ -50,6 +50,17 @@ public class BuildTypeTest extends BaseApiTest {
 
         var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
         softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
+    }
+
+    @Test(description = "User should be able to delete build type with locator", groups = {"Regression"})
+    public void userCreatesBuildTypeWithLocatorTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        checkedBuildTypeRequest.create(testData.getBuildType());
+        var response = checkedBuildTypeRequest.read("name:" + testData.getBuildType().getName());
+
+        softy.assertEquals(testData.getBuildType().getName(), response.getName(), "Build type name is not correct");
     }
 
     @Test(description = "User should be able to run build type", groups = {"Positive", "CRUD"})
