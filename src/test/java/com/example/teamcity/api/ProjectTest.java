@@ -44,6 +44,15 @@ public class ProjectTest extends BaseApiTest{
         softy.assertThat(response.getName()).isEqualTo(testData.getProject().getName());
     }
 
+    @Test(description = "User should be able to get project by fields parameter", groups = {"Positive", "CRUD"})
+    public void userGetProjectByFieldParameterTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.<Project>getRequest(PROJECTS).create(testData.getProject());
+        var response = userAuthSpec.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName() + "?field=name");
+        softy.assertThat(response.getName()).isEqualTo(testData.getProject().getName());
+    }
+
     @Test(description = "User should be able to archived project", groups = {"Positive", "CRUD"})
     public void userArchivedProjectTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
