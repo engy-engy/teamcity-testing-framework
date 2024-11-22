@@ -5,8 +5,12 @@ import com.example.teamcity.api.models.AuthModules;
 import com.example.teamcity.api.models.ServerAuthSettings;
 import com.example.teamcity.api.requests.ServerAuthRequest;
 import com.example.teamcity.api.spec.Specifications;
+import io.qameta.allure.awaitility.AllureAwaitilityListener;
+import org.awaitility.Awaitility;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
+
+import java.time.Duration;
 
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
@@ -21,6 +25,12 @@ public class BaseApiTest extends BaseTest {
 
     @BeforeSuite(alwaysRun = true)
     public void setUpServerAuthSettings() {
+        // Отображение Awaitility действий в Allure репорте, настройка Awaitility
+        Awaitility.setDefaultConditionEvaluationListener(new AllureAwaitilityListener());
+        Awaitility.setDefaultPollInterval(Duration.ofSeconds(3));
+        Awaitility.setDefaultTimeout(Duration.ofSeconds(30));
+        Awaitility.pollInSameThread();
+
         // Получаем текущие настройки perProjectPermissions
         perProjectPermissions = serverAuthRequest.read().getPerProjectPermissions();
 
