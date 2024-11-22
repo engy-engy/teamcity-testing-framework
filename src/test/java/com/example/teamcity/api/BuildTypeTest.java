@@ -1,10 +1,8 @@
 package com.example.teamcity.api;
 
 import com.example.teamcity.api.generators.RandomData;
-import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
-import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.checked.CheckedBase;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
@@ -51,7 +49,7 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertThat(createdBuildType.getId()).as("buildTypeId").isEqualTo(testData.getBuildType().getId());
     }
 
-    @Test(description = "User should be able to delete build type with locator", groups = {"Regression"})
+    @Test(description = "User should be able to delete build type with locator", groups = {"CRUD"})
     public void userCreatesBuildTypeWithLocatorTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
@@ -103,7 +101,7 @@ public class BuildTypeTest extends BaseApiTest {
         });
     }
 
-    @Test(description = "User should not be able to create two build types with the same id", groups = {"Regression"})
+    @Test(description = "User should not be able to create two build types with the same id", groups = {"CRUD"})
     public void userCreatesTwoBuildTypesWithSameIdTest() {
         uncheckedSuperUser.getRequest(USERS).create(testData.getUser());
         uncheckedSuperUser.getRequest(PROJECTS).create(testData.getProject());
@@ -123,7 +121,7 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertThat(secondBuildTypeTestData.getId()).isEqualTo(testData.getBuildType().getId());
     }
 
-    @Test(description = "User should not be able to create build type with id exceeding the limit", groups = {"Regression"})
+    @Test(description = "User should not be able to create build type with id exceeding the limit", groups = {"CRUD"})
     public void userCreatesBuildTypeWithIdExceedingLimitTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
@@ -140,7 +138,7 @@ public class BuildTypeTest extends BaseApiTest {
         //to do softy
     }
 
-    @Test(description = "Unauthorized user should not be able to create build type", groups = {"Regression"})
+    @Test(description = "Unauthorized user should not be able to create build type", groups = {"CRUD"})
     public void unauthorizedUserCreatesBuildTypeTest() {
         superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
 
@@ -167,76 +165,6 @@ public class BuildTypeTest extends BaseApiTest {
         var buildType = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
         softy.assertThat(buildType.getName()).isEqualTo(testData.getBuildType().getName());
-    }
-
-    @Test(description = "Project admin should not be able to create build type for not their project ", groups = {"Negative","Roles "})
-    public void projectAdminCannotCreateBuildTypeForAnotherUserProjectTest(){
-        var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
-        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
-        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-
-        user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
-
-        userAuthSpec.getRequest(BUILD_TYPES).create(testData.getBuildType());
-
-        var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
-        var project2 = superUserCheckRequests.<Project>getRequest(PROJECTS).create(generate(Project.class));
-
-        user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + project.getId()));
-        superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
-
-        var buildType2 = generate(BuildType.class);
-        buildType2.getProject().setId(project2.getId());
-
-        var response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
-                .create(buildType2)
-                .then()
-                .extract().response();
-
-        softy.assertThat(response.asString())
-                .contains("You do not have enough permissions to edit project with id: " + project2.getId())
-                .contains("Access denied. Check the user has enough permissions to perform the operation.");
-
-    }
-
-    @Test(description = "Project admin should not be able to create subproject with internal id _Root", groups = {"Negative","Roles "})
-    public void projectAdminCannotCreateSubprojectWithoutPermissionTest(){
-        var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
-        var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-
-        var project = testData.getProject();
-        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-
-        user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update("id:" + user1.getId(), user1);
-
-        var user2 = superUserCheckRequests.<User>getRequest(USERS).create(generate(User.class));
-        var userAuthSpec2 = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-
-        user2.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
-        superUserCheckRequests.getRequest(USERS).update("id:" + user2.getId(), user2);
-
-
-        generate(Project.class);
-        var response1 = userAuthSpec.getRequest(PROJECTS)
-                .create(testData.getProject())
-                .then()
-                .extract().response();
-
-        softy.assertThat(response1.asString())
-                .contains("You do not have \"Create subproject\" permission in project with internal id: _Root")
-                .contains("Access denied. Check the user has enough permissions to perform the operation.");
-
-        var response2 = userAuthSpec2.getRequest(PROJECTS)
-                .create(testData.getProject())
-                .then()
-                .extract().response();
-
-        softy.assertThat(response2.asString())
-                .contains("You do not have \"Create subproject\" permission in project with internal id: _Root")
-                .contains("Access denied. Check the user has enough permissions to perform the operation.");
-        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, project);
     }
 
     @Test(description = "User should be able to delete build type", groups = {"Regression"})

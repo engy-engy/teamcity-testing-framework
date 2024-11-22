@@ -148,3 +148,106 @@ Authorization: Basic test_baagyaeint 1234qwer
   "status": true
 }
 
+
+
+### 1. Create project
+# @no-cookie-jar
+POST http://{{host}}:{{port}}/app/rest/projects
+Content-Type: application/json
+Accept: application/json
+Authorization: Basic test_baagyaeint 1234qwer
+
+{
+  "parentProject": {
+    "locator": "_Root"
+  },
+  "name": "test_build_queue",
+  "id": "test_id_12"
+}
+
+
+### 2. Create build type
+# @no-cookie-jar
+POST http://{{host}}:{{port}}/app/rest/buildTypes
+Accept: application/json
+Content-Type: application/json
+Authorization: Basic test_baagyaeint 1234qwer
+
+{
+  "id": "test_buildTypes123",
+  "name": "Print hello world",
+  "project": {
+    "id": "test_id_12"
+  },
+  "steps": {
+    "step": [
+      {
+        "name": "Print hello world",
+        "type": "simpleRunner",
+        "properties": {
+          "property": [
+            {
+              "name": "script.content",
+              "value": "echo 'Hello World!'"
+            },
+            {
+              "name": "teamcity.step.mode",
+              "value": "default"
+            },
+            {
+              "name": "use.custom.script",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+
+
+
+### 3. Add build to queue
+# @no-cookie-jar
+POST http://{{host}}:{{port}}/app/rest/buildQueue
+Accept: application/json
+Content-Type: application/json
+Authorization: Basic test_baagyaeint 1234qwer
+
+{
+  "buildType": {
+    "id": "test_buildTypes123",
+    "name": "Print hello world",
+    "project": {
+      "id": "test_id_12",
+      "name": "test_build_queue"
+    },
+    "steps": {
+      "step": [
+        {
+          "name": "Print hello world",
+          "type": "simpleRunner",
+          "properties": {
+            "property": [
+              {
+                "name": "script.content",
+                "value": "echo 'Hello World!'"
+              },
+              {
+                "name": "teamcity.step.mode",
+                "value": "default"
+              },
+              {
+                "name": "use.custom.script",
+                "value": "true"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+
