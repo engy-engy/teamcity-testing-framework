@@ -17,10 +17,10 @@ Authorization: Basic test_wXRrTwXouv test_HPVkYfRVnS
 
 ### Get user
 # @no-cookie-jar
-GET http://admin:admin@{{host}}:{{port}}/app/rest/users/username:test_uNWSRMAGgC
+GET http://{{host}}:{{port}}/app/rest/users/username:test_baagyaeint?fields=name
 Content-Type: application/json
 Accept: application/json
-Authorization: Basic test_uNWSRMAGgC test_DPjlNSlLnB
+Authorization: Basic test_baagyaeint 1234qwer
 
 ### Set role with user
 # @no-cookie-jar
