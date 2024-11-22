@@ -6,13 +6,9 @@ public interface CrudInterface {
 
     Object create(BaseModel model);
 
-    Object read(String id);
+    Object read(String locator);
 
-    Object update(String path, BaseModel model);
-
-    Object update(String path, String parameter);
-
-    Object update(String projectLocator, BaseModel model, String parameter);
+    Object update(String locator, BaseModel model);
 
     Object delete(String id);
 

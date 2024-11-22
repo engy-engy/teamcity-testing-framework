@@ -58,28 +58,6 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
-    public T update(String path, String parameter) {
-        var createdModel = (T) unchekedBase
-                .update(path, parameter)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().as(endpoint.getModelClass());
-        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
-        return createdModel;
-    }
-
-    @Override
-    public T update(String projectLocator, BaseModel model, String parameter) {
-        var createdModel = (T) unchekedBase
-                .update(projectLocator, model, parameter)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().as(endpoint.getModelClass());
-        TestDataStorage.getStorage().addCreatedEntity(endpoint, createdModel);
-        return createdModel;
-    }
-
-    @Override
     public Object delete(String id) {
         return unchekedBase
                 .delete(id)

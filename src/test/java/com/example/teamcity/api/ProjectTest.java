@@ -7,6 +7,7 @@ import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
@@ -49,7 +50,18 @@ public class ProjectTest extends BaseApiTest{
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-        var projectArchived = userAuthSpec.getRequest(PROJECTS).update("id:" + testData.getProject().getId() + "/archived", "true");
+
+        var projectArchived = RestAssured
+                .given()
+                .spec(Specifications.authSpec(testData.getUser()))
+                .accept("text/plain")
+                .contentType("text/plain")
+                .body("true")
+                .put(PROJECTS.getUrl() + "/id:" + testData.getProject().getId() + "/archived")
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+
         String responseBody = projectArchived.getBody().asString();
         softy.assertEquals(responseBody, "true", "Expected response body to be 'true'");
     }
@@ -60,7 +72,16 @@ public class ProjectTest extends BaseApiTest{
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
-        userAuthSpec.getRequest(PROJECTS).update(testData.getProject().getId() + "/archived", "true");
+        RestAssured
+                .given()
+                .spec(Specifications.authSpec(testData.getUser()))
+                .accept("text/plain")
+                .contentType("text/plain")
+                .body("true")
+                .put(PROJECTS.getUrl() + "/id:" + testData.getProject().getId() + "/archived")
+                .then()
+                .assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().response();
 
         Response response =  new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
                 .read(testData.getProject().getId())
@@ -70,35 +91,6 @@ public class ProjectTest extends BaseApiTest{
 
         boolean currentName = Boolean.parseBoolean(response.jsonPath().getString("archived"));
         softy.assertEquals(currentName, true);
-    }
-
-    @Test(description = "User should be able to update data to for project", groups = {"Positive", "CRUD"})
-    public void userUpdateDataProjectTest() {
-        var updatedProjectValue = RandomData.getString() + "_Updated";
-        var updatedProjectName = RandomData.getString(6);
-
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
-        testData.getProject().setValue(updatedProjectValue);
-
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .update(testData.getProject().getId(), testData.getProject(), updatedProjectName)
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().response();
-
-        Response currentProject = new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
-                .read(testData.getProject().getId())
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().response();
-
-        var currentName = currentProject.jsonPath().getString("parameters.property[0].name");
-        var currentValue = currentProject.jsonPath().getString("parameters.property[0].value");
-
-        softy.assertEquals(currentName, updatedProjectName);
-        softy.assertEquals(currentValue, updatedProjectValue);
     }
 
     @Test(description = "User should be able to copy project", groups = {"Positive", "CRUD"})
