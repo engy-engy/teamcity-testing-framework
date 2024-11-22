@@ -49,6 +49,18 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertThat(createdBuildType.getId()).as("buildTypeId").isEqualTo(testData.getBuildType().getId());
     }
 
+    @Test(description = "User should be able get build type with fields parameter", groups = {"Positive", "CRUD"})
+    public void userGetBuildTypeWithFieldParameterTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+
+        var response = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("name:" + testData.getBuildType().getName() +"?fields=name");
+        softy.assertThat(response.getName()).isEqualTo(testData.getBuildType().getName());
+    }
+
     @Test(description = "User should be able to delete build type with locator", groups = {"CRUD"})
     public void userCreatesBuildTypeWithLocatorTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());

@@ -1,10 +1,7 @@
 package com.example.teamcity.api;
 
 import com.example.teamcity.api.generators.TestDataStorage;
-import com.example.teamcity.api.models.Build;
-import com.example.teamcity.api.models.Properties;
-import com.example.teamcity.api.models.Property;
-import com.example.teamcity.api.models.TestData;
+import com.example.teamcity.api.models.*;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
@@ -17,7 +14,7 @@ import static com.example.teamcity.api.enums.Endpoint.*;
 public class BuildQueueTest extends BaseApiTest{
 
     @Test(description = "User should be able add build to queue", groups = {"CRUD"})
-    public void userAddBuildTypeTest() {
+    public void userAddBuildTypeToQueueTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
         superUserCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
@@ -33,5 +30,16 @@ public class BuildQueueTest extends BaseApiTest{
                 .extract().response();
 
         softy.assertThat(response.jsonPath().getString("state")).isEqualTo("queued");
+    }
+
+    @Test(description = "User should be able get queue with fields parameter", groups = {"CRUD"})
+    public void userGetQueueWithFieldParameterTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+
+        var response = uncheckedSuperUser.getRequest(BUILD_QUEUE)
+                .read("?fields=count")
+                .then().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+        softy.assertThat(response.jsonPath().getString("count")).matches("\\d+");
     }
 }
