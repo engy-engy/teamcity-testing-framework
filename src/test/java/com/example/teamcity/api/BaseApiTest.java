@@ -25,7 +25,6 @@ public class BaseApiTest extends BaseTest {
 
     @BeforeSuite(alwaysRun = true)
     public void setUpServerAuthSettings() {
-
         // Отображение Awaitility действий в Allure репорте, настройка Awaitility
         Awaitility.setDefaultConditionEvaluationListener(new AllureAwaitilityListener());
         Awaitility.setDefaultPollInterval(Duration.ofSeconds(3));
