@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Agent extends BaseModel {
 
-    private int id;
+    private String id;
 
     private String name;
 

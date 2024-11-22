@@ -89,4 +89,4 @@ runs:
     - name: Setup TeamCity Agent
       shell: bash
       # Аутентификация агента
-      run: ./mvnw clean test -Dtest=AuthAgentTest#authAgentTest
+      run: ./mvnw clean test -Dtest=AuthAgentTest#setupTeamCityAgentTest
