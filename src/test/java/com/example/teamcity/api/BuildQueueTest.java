@@ -35,11 +35,11 @@ public class BuildQueueTest extends BaseApiTest{
     @Test(description = "User should be able get queue with fields parameter", groups = {"CRUD"})
     public void userGetQueueWithFieldParameterTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-
         var response = uncheckedSuperUser.getRequest(BUILD_QUEUE)
                 .read("?fields=count")
                 .then().statusCode(HttpStatus.SC_OK)
                 .extract().response();
         softy.assertThat(response.jsonPath().getString("count")).matches("\\d+");
     }
+
 }
