@@ -1,12 +1,17 @@
 package com.example.teamcity.api;
 
+import com.example.teamcity.api.generators.RandomData;
+import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
+import com.example.teamcity.api.requests.checked.CheckedBase;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -22,6 +27,17 @@ import static org.hamcrest.Matchers.equalTo;
 
 @Test(groups = {"Regression"})
 public class BuildTypeTest extends BaseApiTest {
+
+    private static final int BUILD_TYPE_ID_CHARACTERS_LIMIT = 225;
+    private CheckedBase<BuildType> checkedBuildTypeRequest;
+    private UncheckedBase uncheckedBuildTypeRequest;
+
+    @BeforeMethod(alwaysRun = true)
+    public void getRequest() {
+        checkedBuildTypeRequest = new CheckedBase<>(Specifications.authSpec(testData.getUser()), BUILD_TYPES);
+        uncheckedBuildTypeRequest = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES);
+    }
+
 
     @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
     public void userCreatesBuildTypeTest() {
@@ -77,24 +93,55 @@ public class BuildTypeTest extends BaseApiTest {
         });
     }
 
-    @Test(description = "User should not be able to create to build types with the same id", groups = {"Negative","CRUD "})
-    public void userCreatesTwoBuildTypeWithTheSameIdTest() {
-        var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
+    @Test(description = "User should not be able to create two build types with the same id", groups = {"Regression"})
+    public void userCreatesTwoBuildTypesWithSameIdTest() {
+        uncheckedSuperUser.getRequest(USERS).create(testData.getUser());
+        uncheckedSuperUser.getRequest(PROJECTS).create(testData.getProject());
 
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        checkedBuildTypeRequest.create(testData.getBuildType());
 
-        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+        var secondTestData = generate();
 
-        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
-        var response = new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
-                .create(buildTypeWithSameId)
-                .then()
-                .extract().response();
+        var secondBuildTypeTestData = secondTestData.getBuildType();
+        secondBuildTypeTestData.setId(testData.getBuildType().getId());
+        secondBuildTypeTestData.setProject(testData.getBuildType().getProject());
+
+        var response = uncheckedBuildTypeRequest.create(secondBuildTypeTestData)
+                .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract();
 
         softy.assertTrue(response.asString().contains("The build configuration / template ID \"%s\" is already used by another configuration or template\n"
                         .formatted(testData.getBuildType().getId())),
                 "Expected error message not found in the response.");
+    }
+
+    @Test(description = "User should not be able to create build type with id exceeding the limit", groups = {"Regression"})
+    public void userCreatesBuildTypeWithIdExceedingLimitTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        testData.getBuildType().setId(RandomData.getString(BUILD_TYPE_ID_CHARACTERS_LIMIT + 1));
+
+        uncheckedBuildTypeRequest.create(testData.getBuildType())
+                .then().assertThat().statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+
+        testData.getBuildType().setId(RandomData.getString(BUILD_TYPE_ID_CHARACTERS_LIMIT));
+
+        checkedBuildTypeRequest.create(testData.getBuildType());
+    }
+
+    @Test(description = "Unauthorized user should not be able to create build type", groups = {"Regression"})
+    public void unauthorizedUserCreatesBuildTypeTest() {
+        superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        uncheckedBuildTypeRequest.create(testData.getBuildType())
+                .then().assertThat().statusCode(HttpStatus.SC_UNAUTHORIZED);
+
+        var response = uncheckedSuperUser.getRequest(BUILD_TYPES).read(testData.getBuildType().getId())
+                .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND)
+                        .extract();
+
+        softy.assertTrue(response.asString().contains("No build type or template is found by id, internal id or name '" + testData.getBuildType().getId()+ "'"));
     }
 
     @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})
@@ -148,7 +195,7 @@ public class BuildTypeTest extends BaseApiTest {
         var user1 = superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser());
         var userAuthSpec = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        var projectId1 = testData.getProject().getId();
+        var project = testData.getProject();
         userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
 
         user1.setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
@@ -179,7 +226,21 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertTrue(response2.asString().contains("You do not have \"Create subproject\" permission in project with internal id: _Root\n" +
                         "Access denied. Check the user has enough permissions to perform the operation."),
                 "Expected error message not found in the response for user2.");
-        superUserCheckRequests.getRequest(PROJECTS).delete(projectId1);
+        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, project);
+    }
+
+    @Test(description = "User should be able to delete build type", groups = {"Regression"})
+    public void userDeletesBuildTypeTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        checkedBuildTypeRequest.create(testData.getBuildType());
+        checkedBuildTypeRequest.delete(testData.getBuildType().getId());
+
+        var response = uncheckedBuildTypeRequest.read(testData.getBuildType().getId())
+                .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND)
+                .extract();
+        softy.assertTrue(response.asString().contains("No build type or template is found by id, internal id or name '" + testData.getBuildType().getId()+ "'"));
     }
 
 }
