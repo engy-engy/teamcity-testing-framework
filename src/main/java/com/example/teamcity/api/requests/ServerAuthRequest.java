@@ -33,5 +33,5 @@ public class ServerAuthRequest  {
                 .assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().as(ServerAuthSettings.class);
     }
-    
+
 }
