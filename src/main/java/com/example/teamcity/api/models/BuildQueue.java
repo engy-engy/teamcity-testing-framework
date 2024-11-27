@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BuildQueue extends BaseModel {
+
     private BuildTypeId buildType;
 
     @Builder

@@ -16,4 +16,5 @@ public class SourceProject extends BaseModel{
 
     @Parameterizable
     private String locator;
+
 }

@@ -13,10 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Role extends BaseModel {
+
     @Builder.Default
     @Parameterizable
     private String roleId = "SYSTEM_ADMIN";
+
     @Builder.Default
     @Parameterizable
     private String scope = "g";
+
 }

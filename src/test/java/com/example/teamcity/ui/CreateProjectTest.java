@@ -23,49 +23,52 @@ public class CreateProjectTest extends BaseUiTest {
 
         CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),true);
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(), true);
 
         step("Check that all entities (project, buildType) was successfully created with correct data on API level");
         var createdProject = superUserCheckRequests.<Project>getRequest(PROJECTS).read("name:" + testData.getProject().getName());
-        softy.assertNotNull(createdProject);
+        softy.assertThat(createdProject).isNotNull();
+        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, createdProject);
 
         step("Check that project is visible on Project Page (http://localhost:8111/favorite/projects)");
         var projectExist = ProjectsPage.open()
                 .getProjects().stream()
-                .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()));
-        softy.assertTrue(projectExist);
-        TestDataStorage.getStorage().addCreatedEntity(PROJECTS, createdProject);
+                .anyMatch(project -> project.getName().text().equals(testData.getProject().getName()) );
+        softy.assertThat(projectExist).isTrue();
     }
 
     @Test(description = "User should not be able to create project without name", groups = {"Negative"})
     public void userCreateProjectWithoutNameTest() {
-
         step("Login as user");
         loginAs(testData.getUser());
 
         step("Open Create Project Page (http://localhost:8111/admin/createObjectMenu.html)");
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject("", testData.getBuildType().getName(), false);
+                .setupProject("", testData.getBuildType().getName(),false);
 
         step("Check that error appears `Project name must not be empty`");
-        softy.assertEquals(errorElement.text(),"Project name must not be empty");
-
+        softy.assertThat(errorElement.text()).isEqualTo("Project name must not be empty");
     }
 
     @Test(description = "User should not be able to create project with same name", groups = {"Negative"})
     public void userCreateProjectWithSameNameTest() {
-
         step("Login as user");
         loginAs(testData.getUser());
 
+        step("Create project");
         var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
+        step("Create project with same name");
         SelenideElement errorElement = CreateProjectPage.open("_Root")
                 .createForm(REPO_URL)
-                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(), false);
+                .setupProject(testData.getProject().getName(), testData.getBuildType().getName(),false);
 
-        softy.assertEquals(errorElement.text(),"Project with this name already exists: %s"
-                .formatted(testData.getProject().getName(), project.getName()));
+        step("Check that error appears `Project with this name already exists`");
+        softy.assertThat(errorElement.text())
+                .as("Проверка, что отображается сообщение об ошибке при создании проекта с одинаковым именем")
+                .isEqualTo("Project with this name already exists: %s".formatted(testData.getProject().getName()));
+
     }
+
 }

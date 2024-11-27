@@ -13,6 +13,7 @@ import static io.qameta.allure.Allure.step;
 
 @Test(groups = {"Regression"})
 public class CreateBuildTypeTest extends BaseUiTest {
+
     private static final String REPO_WORKSHOPS_URL = "https://github.com/engy-engy/workshops";
     private static final String REPO_TEAM_CITY_URL = "https://github.com/engy-engy/teamcity-testing-framework";
 
@@ -28,17 +29,17 @@ public class CreateBuildTypeTest extends BaseUiTest {
         step("Open Create Build Type Page (http://localhost:8111/admin/createObjectMenu.html?projectId={projectId}&showMode=createBuildTypeMenu)");
         CreateBuildConfigurationPage.open(testData.getProject().getId())
                         .createForm(REPO_WORKSHOPS_URL)
-                        .setupBuildTypeConfiguration(testData.getBuildType().getName(), true);
+                        .setupBuildTypeConfiguration(testData.getBuildType().getName());
 
         step("Check build type was successfully created with correct data on API level");
         var createdBuildTypeConfig = superUserCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("name:" + testData.getBuildType().getName());
-        softy.assertNotNull(createdBuildTypeConfig);
+        softy.assertThat(createdBuildTypeConfig).isNotNull();
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
         var buildsExist = BuildsPage.open(project.getId())
                 .getBuilds().stream()
                 .anyMatch(build -> build.getButton().text().equals(testData.getBuildType().getName()));
-        softy.assertTrue(buildsExist);
+        softy.assertThat(buildsExist).isTrue();
     }
 
     @Test(description = "User should not be able to create build type configuration without name", groups = {"Positive"})
@@ -53,10 +54,10 @@ public class CreateBuildTypeTest extends BaseUiTest {
         step("Create Build Type same name");
         SelenideElement errorElement = CreateBuildConfigurationPage.open(project.getId())
                 .createForm(REPO_TEAM_CITY_URL)
-                .setupBuildTypeConfiguration("", false);
+                .setupBuildTypeConfiguration("");
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
-        softy.assertEquals(errorElement.text(), "Build configuration name must not be empty");
+        softy.assertThat(errorElement.text()).isEqualTo("Build configuration name must not be empty");
     }
 
     @Test(description = "User should not be able to create build type configuration with same name", groups = {"Positive"})
@@ -72,10 +73,12 @@ public class CreateBuildTypeTest extends BaseUiTest {
         step("Create Build Type same name");
         SelenideElement errorElement = CreateBuildConfigurationPage.open(project.getId())
                 .createForm(REPO_TEAM_CITY_URL)
-                .setupBuildTypeConfiguration(buildType.getName(), false);
+                .setupBuildTypeConfiguration(buildType.getName());
 
         step("Check that build type Check is visible in Project (http://localhost:8111/favorite/projects)");
-        softy.assertEquals(errorElement.text(),"Build configuration with name \"%s\" already exists in project: \"%s\""
-                .formatted(testData.getBuildType().getName(), project.getName()));
+        softy.assertThat(errorElement.text())
+                .isEqualTo("Build configuration with name \"%s\" already exists in project: \"%s\""
+                        .formatted(testData.getBuildType().getName(), project.getName()));
     }
+
 }

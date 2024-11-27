@@ -19,4 +19,5 @@ public class Property extends BaseModel{
 
     @Parameterizable
     private String value;
+
 }

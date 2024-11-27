@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import lombok.Getter;
 
 import static com.codeborne.selenide.Selenide.$;
@@ -23,6 +24,7 @@ public class BuildConfigurationPage extends BasePage{
     public SelenideElement searchValueButton = $(".ring-button-toolbar-buttonToolbar");
     public ElementsCollection logResult = $$(".LogMessage__text--ly");
 
+    @Step("Open build configuration page")
     public static BuildConfigurationPage open(String projectName) {
         return Selenide.open(BUILDS_URL.formatted(projectName), BuildConfigurationPage.class);
     }

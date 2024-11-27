@@ -14,6 +14,7 @@ import io.restassured.specification.RequestSpecification;
  * Этот класс отвечает только за отправку запросов, бещ проверок запросов
  */
 public class UncheckedBase extends Request implements CrudInterface, SearchInterface {
+
     public UncheckedBase(RequestSpecification spec, Endpoint endpoint) {
         super(spec, endpoint);
     }
@@ -42,27 +43,6 @@ public class UncheckedBase extends Request implements CrudInterface, SearchInter
                 .spec(spec)
                 .body(model)
                 .put(endpoint.getUrl() + "/" + locator);
-    }
-
-    @Override
-    public Response update(String path, String parameters) {
-
-        return RestAssured
-                .given()
-                .spec(spec)
-                .accept("text/plain")
-                .contentType("text/plain")
-                .body(parameters)
-                .put(String.format(endpoint.getUrl() + "/%s", path));
-    }
-
-    @Override
-    public Response update(String projectLocator, BaseModel model, String parameter) {
-        return RestAssured
-                .given()
-                .spec(spec)
-                .body(model)
-                .put(String.format(endpoint.getUrl() + "/%s/parameters/%s", projectLocator, parameter));
     }
 
     @Override

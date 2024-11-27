@@ -15,6 +15,7 @@ import java.util.EnumMap;
  * когда не требуется проверка успешности HTTP-ответов.
  */
 public class UncheckedRequests {
+
     private final EnumMap<Endpoint, UncheckedBase> requests = new EnumMap<>(Endpoint.class);
 
     public UncheckedRequests(RequestSpecification spec) {
@@ -26,4 +27,5 @@ public class UncheckedRequests {
     public UncheckedBase getRequest(Endpoint endpoint) {
         return requests.get(endpoint);
     }
+
 }

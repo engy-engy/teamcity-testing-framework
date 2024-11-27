@@ -17,6 +17,7 @@ import java.util.EnumMap;
  * доступ к необходимым CRUD-операциям для любого эндпоинта без необходимости создавать их вручную каждый раз.
  */
 public class CheckedRequests {
+
     private final EnumMap<Endpoint, CheckedBase> requests = new EnumMap<>(Endpoint.class);
 
     // Инициализирует карту запросов для каждого эндпоинта, создавая для них экземпляры CheckedBase с заданной спецификацией запроса.
@@ -25,8 +26,10 @@ public class CheckedRequests {
             requests.put(endpoint, new CheckedBase(spec, endpoint));
         }
     }
+
     // Возвращает объект CheckedBase, который содержит CRUD-операции для заданного эндпоинта
     public <T extends BaseModel> CheckedBase<T> getRequest(Endpoint endpoint) {
         return (CheckedBase<T>) requests.get(endpoint);
     }
+
 }
