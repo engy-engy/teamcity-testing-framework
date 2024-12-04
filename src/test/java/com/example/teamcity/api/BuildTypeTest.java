@@ -3,6 +3,7 @@ package com.example.teamcity.api;
 import com.example.teamcity.api.generators.RandomData;
 import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
+import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.checked.CheckedBase;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
@@ -47,6 +48,19 @@ public class BuildTypeTest extends BaseApiTest {
 
         var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
         softy.assertThat(createdBuildType.getId()).as("buildTypeId").isEqualTo(testData.getBuildType().getId());
+    }
+
+    @Test(description = "User should be able to create build type with field parameter", groups = {"Positive", "CRUD"})
+    public void userCreatesBuildTypeWithFieldParameterTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userUnCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userUnCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+
+        var response = userUnCheckRequests.getRequest(BUILD_TYPES).create("?fields=name", testData.getBuildType())
+                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+        softy.assertThat(response.jsonPath().getString("name")).isEqualTo(testData.getBuildType().getName());
     }
 
     @Test(description = "User should be able get build type with fields parameter", groups = {"Positive", "CRUD"})
