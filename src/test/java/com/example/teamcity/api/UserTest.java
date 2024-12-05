@@ -13,12 +13,14 @@ public class UserTest extends BaseApiTest {
     public void userGetNameWithFieldParameterTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var response = superUserCheckRequests.<User>getRequest(USERS).read("username:" + testData.getUser().getUsername() +"?fields=username");
+        softy.assertThat(response.getUsername()).isNotEmpty();
         softy.assertThat(response.getUsername()).isEqualTo(testData.getUser().getUsername().toLowerCase());
     }
 
     @Test(description = "User should be able create user with the fields parameter", groups = {"Positive", "CRUD"})
     public void userCreatesUserWithFieldParameterTest() {
-        var response = uncheckedSuperUser.getRequest(USERS).create("?fields=username", testData.getUser())
+        var response = uncheckedSuperUser.getRequest(USERS)
+                .create("?fields=username", testData.getUser())
                 .then().statusCode(HttpStatus.SC_OK)
                 .extract().response();
 
