@@ -46,8 +46,20 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId() + "?fields=name");
-        softy.assertThat(createdBuildType.getName()).as("buildName").isEqualTo(testData.getBuildType().getName());
+        var response = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId() + "?fields=name");
+        softy.assertThat(response.getName()).as("buildName").isEqualTo(testData.getBuildType().getName());
+    }
+
+    @Test(description = "User should be able get all build types", groups = {"Positive", "CRUD"})
+    public void userGetAllBuildTypes() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+
+        var response = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("?fields=name");
+        softy.assertThat(response).isNotNull();
     }
 
     @Test(description = "User should be able to create build type with field parameter", groups = {"Positive", "CRUD"})
@@ -188,9 +200,9 @@ public class BuildTypeTest extends BaseApiTest {
         testData.getUser().setRoles(generate(Roles.class, PROJECT_ADMIN.getRoleName(), "p:" + testData.getProject().getId()));
         superUserCheckRequests.getRequest(USERS).update("id:" + createdUser.getId(), testData.getUser());
 
-        var buildType = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
+        var response = userAuthSpec.<BuildType>getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        softy.assertThat(buildType.getName()).isEqualTo(testData.getBuildType().getName());
+        softy.assertThat(response.getName()).isEqualTo(testData.getBuildType().getName());
     }
 
     @Test(description = "User should be able to delete build type", groups = {"Regression"})
