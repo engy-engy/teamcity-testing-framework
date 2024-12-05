@@ -59,7 +59,7 @@ public class BuildTypeTest extends BaseApiTest {
         userCheckRequests.getRequest(BUILD_TYPES).create("fields=name", testData.getBuildType());
 
         var response = userCheckRequests.getRequest(BUILD_TYPES)
-                .read("?fields=name")
+                .read("?name:"+testData.getBuildType().getName()+"&fields=name")
                 .then().extract().response();
         softy.assertThat(response).isNotNull();
     }

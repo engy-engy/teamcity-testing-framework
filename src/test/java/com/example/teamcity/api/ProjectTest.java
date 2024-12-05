@@ -247,4 +247,17 @@ public class ProjectTest extends BaseApiTest{
                 .contains("Access denied. Check the user has enough permissions to perform the operation.");
 
     }
+
+    @Test(description = "User should be able to create project bad request", groups = {"Negative", "CRUD"})
+    public void userCreateProjectBadRequestTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userAuthSpec = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        userAuthSpec.getRequest(PROJECTS).create(testData.getProject());
+        var response = uncheckedSuperUser.getRequest(PROJECTS).create(testData.getProject())
+                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract().response();
+        softy.assertThat(response.asString())
+                .contains("Project with this name already exists: "
+                        + testData.getProject().getName());
+    }
 }

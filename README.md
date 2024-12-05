@@ -165,3 +165,11 @@
    ```bash
       mvn clean test allure:serve
    ```
+
+## Запуск тестов
+
+Для генерации coverage
+
+   ```bash
+   .swagger-coverage-commandline/bin/swagger-coverage-commandline -s teamcity.json -i target/swagger-coverage-output
+   ```
