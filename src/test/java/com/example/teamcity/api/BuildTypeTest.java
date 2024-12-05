@@ -46,8 +46,8 @@ public class BuildTypeTest extends BaseApiTest {
 
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId());
-        softy.assertThat(createdBuildType.getId()).as("buildTypeId").isEqualTo(testData.getBuildType().getId());
+        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("id:" + testData.getBuildType().getId() + "?fields=name");
+        softy.assertThat(createdBuildType.getName()).as("buildName").isEqualTo(testData.getBuildType().getName());
     }
 
     @Test(description = "User should be able to create build type with field parameter", groups = {"Positive", "CRUD"})

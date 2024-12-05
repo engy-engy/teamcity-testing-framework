@@ -27,7 +27,7 @@ public class AuthAgentTest extends BaseApiTest {
         var atomicAgents = new AtomicReference<List<Agent>>();
         Awaitility.await()
                 .until(() -> {
-                    atomicAgents.set(checkedAgentsRequest.read("authorized:false").getAgent());
+                    atomicAgents.set(checkedAgentsRequest.read("authorized:false" + "&fields=agent").getAgent());
                     return !atomicAgents.get().isEmpty();
                 });
         return atomicAgents.get().get(0);
