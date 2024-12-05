@@ -1,0 +1,101 @@
+<div>POST to http://:2211964215905106969@172.17.0.1:8111/httpAuth/app/rest/buildQueue</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;buildType&quot;: {
+        &quot;id&quot;: &quot;test_NaoMYbDtTx&quot;,
+        &quot;name&quot;: &quot;test_LqomPbBWMM&quot;,
+        &quot;project&quot;: {
+            &quot;id&quot;: &quot;test_VQcBGlwpYa&quot;,
+            &quot;name&quot;: &quot;test_EmArqCqCpS&quot;,
+            &quot;locator&quot;: null,
+            &quot;sourceProject&quot;: null,
+            &quot;copyAllAssociatedSettings&quot;: false,
+            &quot;value&quot;: null
+        },
+        &quot;steps&quot;: {
+            &quot;count&quot;: null,
+            &quot;step&quot;: [
+                {
+                    &quot;id&quot;: null,
+                    &quot;name&quot;: &quot;test_SLvYIcsDmJ&quot;,
+                    &quot;type&quot;: &quot;simpleRunner&quot;,
+                    &quot;properties&quot;: {
+                        &quot;property&quot;: [
+                            {
+                                &quot;name&quot;: &quot;script.content&quot;,
+                                &quot;value&quot;: &quot;echo &#39;Hello World!&#39;&quot;
+                            },
+                            {
+                                &quot;name&quot;: &quot;teamcity.step.mode&quot;,
+                                &quot;value&quot;: &quot;default&quot;
+                            },
+                            {
+                                &quot;name&quot;: &quot;use.custom.script&quot;,
+                                &quot;value&quot;: &quot;true&quot;
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    &quot;state&quot;: null
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://:2211964215905106969@172.17.0.1:8111/httpAuth/app/rest/buildQueue&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;buildType&quot;: {
+        &quot;id&quot;: &quot;test_NaoMYbDtTx&quot;,
+        &quot;name&quot;: &quot;test_LqomPbBWMM&quot;,
+        &quot;project&quot;: {
+            &quot;id&quot;: &quot;test_VQcBGlwpYa&quot;,
+            &quot;name&quot;: &quot;test_EmArqCqCpS&quot;,
+            &quot;locator&quot;: null,
+            &quot;sourceProject&quot;: null,
+            &quot;copyAllAssociatedSettings&quot;: false,
+            &quot;value&quot;: null
+        },
+        &quot;steps&quot;: {
+            &quot;count&quot;: null,
+            &quot;step&quot;: [
+                {
+                    &quot;id&quot;: null,
+                    &quot;name&quot;: &quot;test_SLvYIcsDmJ&quot;,
+                    &quot;type&quot;: &quot;simpleRunner&quot;,
+                    &quot;properties&quot;: {
+                        &quot;property&quot;: [
+                            {
+                                &quot;name&quot;: &quot;script.content&quot;,
+                                &quot;value&quot;: &quot;echo &#39;Hello World!&#39;&quot;
+                            },
+                            {
+                                &quot;name&quot;: &quot;teamcity.step.mode&quot;,
+                                &quot;value&quot;: &quot;default&quot;
+                            },
+                            {
+                                &quot;name&quot;: &quot;use.custom.script&quot;,
+                                &quot;value&quot;: &quot;true&quot;
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    &quot;state&quot;: null
+}&#39;
+    </div>
+
