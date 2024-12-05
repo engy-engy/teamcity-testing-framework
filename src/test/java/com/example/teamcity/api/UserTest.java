@@ -1,6 +1,8 @@
 package com.example.teamcity.api;
 
 import com.example.teamcity.api.models.User;
+import com.example.teamcity.api.requests.CheckedRequests;
+import com.example.teamcity.api.spec.Specifications;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
@@ -19,7 +21,8 @@ public class UserTest extends BaseApiTest {
 
     @Test(description = "The user should be able to get all users", groups = {"Positive", "CRUD"})
     public void userGetAllUserTest() {
-        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        uncheckedSuperUser.getRequest(USERS).create("?fields=name", testData.getUser());
+
         var response = uncheckedSuperUser.getRequest(USERS).read("?fields=username")
                 .then().statusCode(HttpStatus.SC_OK)
                 .extract().response();

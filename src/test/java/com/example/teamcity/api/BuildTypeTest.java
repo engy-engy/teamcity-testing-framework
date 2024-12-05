@@ -53,12 +53,14 @@ public class BuildTypeTest extends BaseApiTest {
     @Test(description = "User should be able get all build types", groups = {"Positive", "CRUD"})
     public void userGetAllBuildTypes() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
         userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
-        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+        userCheckRequests.getRequest(BUILD_TYPES).create("fields=name", testData.getBuildType());
 
-        var response = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read("?fields=name");
+        var response = userCheckRequests.getRequest(BUILD_TYPES)
+                .read("?fields=name")
+                .then().extract().response();
         softy.assertThat(response).isNotNull();
     }
 
