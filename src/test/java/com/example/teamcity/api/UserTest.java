@@ -17,6 +17,15 @@ public class UserTest extends BaseApiTest {
         softy.assertThat(response.getUsername()).isEqualTo(testData.getUser().getUsername().toLowerCase());
     }
 
+    @Test(description = "The user should be able to get all users", groups = {"Positive", "CRUD"})
+    public void userGetAllUserTest() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var response = uncheckedSuperUser.getRequest(USERS).read("?fields=username")
+                .then().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+        softy.assertThat(response).isNotNull();
+    }
+
     @Test(description = "User should be able create user with the fields parameter", groups = {"Positive", "CRUD"})
     public void userCreatesUserWithFieldParameterTest() {
         var response = uncheckedSuperUser.getRequest(USERS)
