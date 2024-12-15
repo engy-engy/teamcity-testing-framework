@@ -5,6 +5,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 public abstract class BasePageElement {
+
     private final SelenideElement element;
 
     public BasePageElement(SelenideElement element) {

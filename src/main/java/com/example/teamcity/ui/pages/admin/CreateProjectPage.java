@@ -1,6 +1,5 @@
 package com.example.teamcity.ui.pages.admin;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
@@ -9,6 +8,7 @@ import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Selenide.$;
 
 public class CreateProjectPage extends CreateBasePage {
+
     private static final String PROJECT_SHOW_MODE = "createProjectMenu";
 
     private SelenideElement projectNameInput = $("#projectName");
@@ -26,7 +26,7 @@ public class CreateProjectPage extends CreateBasePage {
         baseCreateForm(url);
         return this;
     }
-
+    @Step("Setup project form")
     public SelenideElement setupProject(String projectName, String buildTypeName, boolean waitForLoading) {
         projectNameInput.val(projectName);
         buildTypeNameInput.val(buildTypeName);
@@ -34,7 +34,6 @@ public class CreateProjectPage extends CreateBasePage {
         if (waitForLoading) {
             progressLoader.shouldHave(attribute("style", "display: none;"), BASE_WAITING);
         }
-        //progressLoader.shouldHave(attribute("style", "display: none;"), BASE_WAITING);
         return errorProjectName;
     }
 }
