@@ -260,4 +260,20 @@ public class ProjectTest extends BaseApiTest{
                 .contains("Project with this name already exists: "
                         + testData.getProject().getName());
     }
+
+    @Test(description = "User should be able not create project with empty name", groups = {"Negative", "CRUD"})
+    public void userCreateProjectWithEmptyNameTest() {
+        testData.getProject().setName("");
+        var response = uncheckedSuperUser.getRequest(PROJECTS)
+                .create(testData.getProject())
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract().response();
+
+        softy.assertThat(response.asString())
+                .contains("BadRequestException: Project name cannot be empty."
+                        + testData.getProject().getName());
+
+    }
+
 }
