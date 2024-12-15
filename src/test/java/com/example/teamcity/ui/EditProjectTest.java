@@ -13,7 +13,7 @@ import static io.qameta.allure.Allure.step;
 public class EditProjectTest extends BaseUiTest {
 
     @Test(description = "User should not be able to delete project", groups = {"Positive"})
-    public void userDeleteProject() {
+    public void userDeleteProjectTest() {
         step("Login as user");
         loginAs(testData.getUser());
 
