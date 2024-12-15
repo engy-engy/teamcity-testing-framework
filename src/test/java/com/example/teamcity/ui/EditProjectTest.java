@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
 import static io.qameta.allure.Allure.step;
 
+@Test(groups = {"Regression"})
 public class EditProjectTest extends BaseUiTest {
 
     @Test(description = "User should not be able to delete project", groups = {"Positive"})
