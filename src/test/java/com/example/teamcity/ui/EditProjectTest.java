@@ -39,4 +39,98 @@ public class EditProjectTest extends BaseUiTest {
                         .formatted(testData.getProject().getId()));
 
     }
+
+    @Test(description = "User should not be able to edit name", groups = {"Positive"})
+    public void userEditProjectNameTest() {
+        step("Login as user");
+        loginAs(testData.getUser());
+
+        step("Create project");
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        step("Edit name project");
+        SelenideElement response = EditProjectPage.open(project.getId())
+                .editNameProject(testData.getProject().getName());
+
+        step("Check that name project —> UI");
+        softy.assertThat(response.text()).contains("Your changes have been saved.");
+
+        step("Check that name project —> API");
+        var checkedResponse = uncheckedSuperUser.getRequest(PROJECTS)
+                .read(testData.getProject().getId())
+                .then().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+        softy.assertThat(checkedResponse.asString())
+                .contains(testData.getProject().getName() + testData.getProject().getName());
+
+    }
+
+    @Test(description = "User should not be able to edit description", groups = {"Positive"})
+    public void userEditProjectDescriptionTest() {
+        step("Login as user");
+        loginAs(testData.getUser());
+
+        step("Create project");
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        step("Edit description project");
+        SelenideElement response = EditProjectPage.open(project.getId())
+                .editDescriptionProject(testData.getProject().getName());
+
+        step("Check that description project —> UI");
+        softy.assertThat(response.text()).contains("Your changes have been saved.");
+
+        step("Check that description project —> API");
+        var checkedResponse = uncheckedSuperUser.getRequest(PROJECTS)
+                .read(testData.getProject().getId())
+                .then().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+        softy.assertThat(checkedResponse.asString())
+                .contains("Description: " + testData.getProject().getName());
+
+    }
+
+    @Test(description = "User should not be able to edit project id", groups = {"Positive"})
+    public void userEditProjectIdProjectTest() {
+        step("Login as user");
+        loginAs(testData.getUser());
+
+        step("Create project");
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        step("Edit description project");
+        SelenideElement response = EditProjectPage.open(project.getId())
+                .editProjectIdProject(testData.getProject().getId());
+
+        step("Check that description project —> UI");
+        softy.assertThat(response.text()).contains("Your changes have been saved.");
+
+        step("Check that description project —> API");
+        var checkedResponse = uncheckedSuperUser.getRequest(PROJECTS)
+                .read(testData.getProject().getId())
+                .then().statusCode(HttpStatus.SC_OK)
+                .extract().response();
+        softy.assertThat(checkedResponse.asString())
+                .contains(testData.getProject().getId() + testData.getProject().getId());
+
+    }
+
+    @Test(description = "User should not be able to edit project id with unsupported character ", groups = {"Negative"})
+    public void userEditProjectIdWithUnsupportedCharacterProjectErrorTest() {
+        step("Login as user");
+        loginAs(testData.getUser());
+
+        step("Create project");
+        var project = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
+
+        step("Edit description project");
+        SelenideElement response = EditProjectPage.open(project.getId())
+                .editUnsupportedCharacterProjectIdProject(testData.getProject().getId());
+
+        step("Check that description project —> UI");
+        softy.assertThat(response.text()).contains(String.format(
+                "Project ID \"%s %s\" is invalid: contains unsupported character ' '. ID should start with a latin letter and contain only latin letters, digits and underscores (at most 225 characters).",
+                testData.getProject().getId(), testData.getProject().getId()
+        ));
+    }
 }

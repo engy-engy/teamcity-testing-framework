@@ -24,6 +24,18 @@ public class EditProjectPage extends BasePage {
 
     private SelenideElement successMessage = $("#message_projectRemoved");
 
+    private SelenideElement projectNameInput = $("#name");
+
+    private SelenideElement projectIdInput = $("#externalId");
+
+    private SelenideElement projectDescriptionInput = $("#description");
+
+    private SelenideElement saveEditProjectButton = $("input.btn.btn_primary.submitButton[name='submitButton']");
+
+    private SelenideElement messageEdit = $("#message_projectUpdated");
+
+    private SelenideElement messageErrorEdit = $("#errorExternalId");
+
     @Step("Open create project edit page")
     public static EditProjectPage open(String projectId) {
         return Selenide.open(EDIT_PROJECT_PAGE_URL.formatted(projectId), EditProjectPage.class);
@@ -39,6 +51,34 @@ public class EditProjectPage extends BasePage {
             deleteProjectButton.shouldBe(Condition.visible).click();
         }
         return successMessage;
+    }
+
+    @Step("Edit name project")
+    public SelenideElement editNameProject(String name) {
+        projectNameInput.val(name + name);
+        saveEditProjectButton.click();
+        return messageEdit.shouldBe(Condition.visible);
+    }
+
+    @Step("Edit description project")
+    public SelenideElement editDescriptionProject(String name) {
+        projectDescriptionInput.val("Description: " + name);
+        saveEditProjectButton.click();
+        return messageEdit.shouldBe(Condition.visible);
+    }
+
+    @Step("Edit project id project")
+    public SelenideElement editProjectIdProject(String id) {
+        projectIdInput.val(id + id);
+        saveEditProjectButton.click();
+        return messageEdit.shouldBe(Condition.visible);
+    }
+
+    @Step("Edit invalid project id project")
+    public SelenideElement editUnsupportedCharacterProjectIdProject(String id) {
+        projectIdInput.val(id + " " + id);
+        saveEditProjectButton.click();
+        return messageErrorEdit.shouldBe(Condition.visible);
     }
 
 }
