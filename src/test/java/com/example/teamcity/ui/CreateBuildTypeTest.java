@@ -80,5 +80,4 @@ public class CreateBuildTypeTest extends BaseUiTest {
                 .isEqualTo("Build configuration with name \"%s\" already exists in project: \"%s\""
                         .formatted(testData.getBuildType().getName(), project.getName()));
     }
-
 }
