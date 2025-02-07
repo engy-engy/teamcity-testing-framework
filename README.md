@@ -3,11 +3,11 @@
 Этот проект предназначен для автоматизации UI и API тестирования с использованием TeamCity и Maven. В данном руководстве
 описаны шаги для локального запуска тестов и настройки среды TeamCity.
 
-### Предварительная настройка
+# Предварительная настройка
 
 ## Запуск TeamCity-сервера в Docker
 
-1. Создайте директорию для TeamCity-сервера :
+1. Создайте директорию для TeamCity-сервера:
     ```bash
     mkdir teamcity-workshop
     cd teamcity-workshop
@@ -17,7 +17,9 @@
 2. Подтяните и запустите контейнер TeamCity-сервера с помощью следующей команды:
     ```bash
     cd teamcity-server
+   ```
    
+   ```bash
     docker run --name teamcity-server-instance \
       -v $(pwd)/teamcity-server/datadir:/data/teamcity_server/datadir \
       -v $(pwd)/teamcity-server/logs:/opt/teamcity/logs \
@@ -31,6 +33,9 @@
 3. Получите IP-адрес контейнера для подключения:
     ```bash
     ipconfig getifaddr en0  # macOS
+    ```
+    
+   ```bash
     ipconfig  # Windows
     ```
 
@@ -43,7 +48,7 @@
     cd teamcity-agent
     ```
 
-2. Запустите TeamCity-агента, указав URL TeamCity-сервера в <host>:
+2. Запустите TeamCity-агента, указав IP-адрес контейнера TeamCity-сервера в <host>:
     ```bash
     docker run -e SERVER_URL="http://<host>:8111" \
       -v $(pwd)/teamcity-agent/conf:/data/teamcity_agent/conf \
@@ -55,7 +60,7 @@
 
 
 
-## Настройка фермы браузеров с использованием Selenoid
+# Настройка фермы браузеров с использованием Selenoid
 
 Этот раздел описывает настройку фермы браузеров для выполнения UI-тестов в изолированной среде с использованием Docker и Selenoid.
 
@@ -115,10 +120,13 @@
 
 ### Шаг 3: Запуск контейнера Selenoid
 Selenoid для выполнения UI тестов.
+Запустить из директории `selenoid`
 
    ```bash
-   cd selenoid/config
-   
+   cd selenoid
+   ```
+
+   ```bash
    docker run -d \
      --name selenoid \
      -p 4444:4444 \
@@ -133,25 +141,15 @@ Selenoid для выполнения UI тестов.
   Перейдите по адресу http://localhost:4444/, где должно отобразиться сообщение "You are using Selenoid!"
    ```
 
-### Шаг 5: Запуск Selenoid UI
-Определите IP-адрес машины (замените команду на соответствующую вашей ОС):
-
-   ```bash
-   # macOS
-   ipconfig getifaddr en0
-   ```
-   ```bash
-   # Windows
-   ipconfig
-   ```
-
-### Шаг 6: Запуск контейнера для Selenoid UI
+### Шаг 4: Запуск контейнера для Selenoid UI
 Selenoid UI для мониторинга выполнения UI тестов.
-Заменить <IP-адрес> на адрес IP-машины.
+Заменить <IP-адрес> на адрес IP-адрес контейнера.
 
    ```bash
    cd selenoid
-   
+  ```
+
+  ```bash
    docker run -d --name selenoid-ui \
       -p 8080:8080 \
       aerokube/selenoid-ui \
