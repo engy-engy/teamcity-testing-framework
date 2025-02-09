@@ -20,16 +20,16 @@ import org.apache.http.HttpStatus;
 @SuppressWarnings("unchecked")
 public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface, SearchInterface , FieldsInterface {
 
-    private final UncheckedBase unchekedBase;
+    private final UncheckedBase uncheckedBase;
 
     public CheckedBase(RequestSpecification spec, Endpoint endpoint) {
         super(spec, endpoint);
-        this.unchekedBase = new UncheckedBase(spec,endpoint);
+        this.uncheckedBase = new UncheckedBase(spec,endpoint);
     }
 
     @Override
     public T create(BaseModel model) {
-        var createdModel = (T) unchekedBase
+        var createdModel = (T) uncheckedBase
                 .create(model)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
@@ -40,7 +40,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
 
     @Override
     public T read(String id) {
-        return (T) unchekedBase
+        return (T) uncheckedBase
                 .read(id)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
@@ -49,7 +49,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
 
     @Override
     public T update(String id, BaseModel model) {
-        var createdModel = (T) unchekedBase
+        var createdModel = (T) uncheckedBase
                 .update(id, model)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
@@ -60,7 +60,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
 
     @Override
     public Object delete(String id) {
-        return unchekedBase
+        return uncheckedBase
                 .delete(id)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT)
@@ -69,7 +69,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
 
     @Override
     public T search(String query, String value) {
-        return (T) unchekedBase
+        return (T) uncheckedBase
                 .search(query, value)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)
@@ -78,7 +78,7 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
 
     @Override
     public T create(String field, BaseModel model) {
-        var createdModel = (T) unchekedBase
+        var createdModel = (T) uncheckedBase
                 .create(model)
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_OK)

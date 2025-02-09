@@ -82,14 +82,14 @@ public class ProjectTest extends BaseApiTest{
 
         RestAssured
                 .given()
-                .spec(Specifications.authSpec(testData.getUser()))
-                .accept("text/plain")
-                .contentType("text/plain")
-                .body("true")
-                .put(PROJECTS.getUrl() + "/id:" + testData.getProject().getId() + "/archived")
+                    .spec(Specifications.authSpec(testData.getUser()))
+                    .accept("text/plain")
+                    .contentType("text/plain")
+                    .body("true")
+                .when()
+                    .put(PROJECTS.getUrl() + "/id:" + testData.getProject().getId() + "/archived")
                 .then()
-                .assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().response();
+                    .assertThat().statusCode(HttpStatus.SC_OK);
 
         Response response =  new UncheckedBase(Specifications.authSpec(testData.getUser()), PROJECTS)
                 .read(testData.getProject().getId())

@@ -177,6 +177,13 @@ Selenoid UI для мониторинга выполнения UI тестов.
    ```bash
       mvn clean test allure:serve
    ```
+Run api/ui tests
+   ```bash
+      mvn clean test -Dtest="com.example.teamcity.api.**" allure:serve
+   ```
+   ```bash
+      mvn clean test -Dtest="com.example.teamcity.ui.**" allure:serve
+   ```
 
 ## Генерация отчета покрытия API
 

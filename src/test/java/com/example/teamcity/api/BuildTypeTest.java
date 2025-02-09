@@ -59,7 +59,35 @@ public class BuildTypeTest extends BaseApiTest {
         userCheckRequests.getRequest(BUILD_TYPES).create("fields=name", testData.getBuildType());
 
         var response = userCheckRequests.getRequest(BUILD_TYPES)
-                .read("?name:"+testData.getBuildType().getName()+"&fields=name")
+                .read("?name:"+testData.getBuildType().getName())
+                .then().extract().response();
+        softy.assertThat(response).isNotNull();
+    }
+
+    @Test(description = "User should be able get all build types with fields", groups = {"Positive", "CRUD"})
+    public void userGetAllBuildTypesWithFields() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+        userCheckRequests.getRequest(BUILD_TYPES).create("fields=name", testData.getBuildType());
+
+        var response = userCheckRequests.getRequest(BUILD_TYPES)
+                .read(testData.getBuildType().getName()+"&fields=name")
+                .then().extract().response();
+        softy.assertThat(response).isNotNull();
+    }
+
+    @Test(description = "User should be able get all build types not parameters", groups = {"Positive", "CRUD"})
+    public void userGetAllBuildTypesNotParameters() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
+        userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
+
+        var response = userCheckRequests.getRequest(BUILD_TYPES)
+                .read("")
                 .then().extract().response();
         softy.assertThat(response).isNotNull();
     }
