@@ -18,7 +18,7 @@ public class RoleTest extends BaseTest {
 
 
     @Test(description = "User should be able get all roles", groups = {"Positive", "CRUD"})
-    public void userGetRoles() {
+    public void userGetRolesTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequest = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var response = userCheckRequest.<Roles>getRequest(ROLES).read("");
@@ -29,7 +29,7 @@ public class RoleTest extends BaseTest {
     }
 
     @Test(description = "User should be able get all roles by fields", groups = {"Positive", "CRUD"})
-    public void userGetRolesByField() {
+    public void userGetRolesByFieldTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequest = new CheckedRequests(Specifications.authSpec(testData.getUser()));
         var response = userCheckRequest.<Roles>getRequest(ROLES).read("?fields=role(name)");
@@ -41,7 +41,7 @@ public class RoleTest extends BaseTest {
     }
 
     @Test(description = "User should be able create role", groups = {"Positive", "CRUD"})
-    public void userCreateRole() {
+    public void userCreateRoleTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
@@ -56,7 +56,7 @@ public class RoleTest extends BaseTest {
     }
 
     @Test(description = "User should be able create role by field", groups = {"Positive", "CRUD"})
-    public void userCreateRoleByField() {
+    public void userCreateRoleByFieldTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 

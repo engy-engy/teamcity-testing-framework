@@ -1,6 +1,6 @@
 package com.example.teamcity.api;
 
-import com.example.teamcity.api.models.Agent;
+import com.example.teamcity.api.models.agent.Agent;
 import com.example.teamcity.api.models.AuthorizedInfo;
 import com.example.teamcity.api.requests.checked.CheckedAgents;
 import com.example.teamcity.api.spec.Specifications;

@@ -1,7 +1,8 @@
 package com.example.teamcity.api.enums;
 
 import com.example.teamcity.api.models.*;
-import com.example.teamcity.api.models.Agents;
+import com.example.teamcity.api.models.agent.AgentPool;
+import com.example.teamcity.api.models.agent.Agents;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,6 +18,7 @@ public enum Endpoint {
     ROLES("/app/rest/roles", Roles.class),
     BUILD_QUEUE("/app/rest/buildQueue", Properties.class),
     AGENTS("/app/rest/agents", Agents.class),
+    AGENTPOOLS("/app/rest/agentPools", AgentPool.class),
     SERVER("/app/rest/server", Server.class),;
 
     private final String url;

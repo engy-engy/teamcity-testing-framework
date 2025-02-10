@@ -1,6 +1,6 @@
 package com.example.teamcity.api.requests.checked;
 
-import com.example.teamcity.api.models.Agents;
+import com.example.teamcity.api.models.agent.Agents;
 import com.example.teamcity.api.models.BaseModel;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
