@@ -55,7 +55,7 @@ public class Specifications {
     // Создает спецификацию запроса для авторизованного пользователя с указанием его имени и пароля, а также хоста из конфигурации.
     public static RequestSpecification authSpec(User user) {
         var requestBuilder = reqBuilder();
-        requestBuilder.setBaseUri("http://%s:%s@%s".formatted(user.getUsername(), user.getPassword(), Config.getProperty("host")));
+        requestBuilder.setBaseUri("http://%s:%s@%s/httpAuth".formatted(user.getUsername(), user.getPassword(), Config.getProperty("host")));
         return requestBuilder.build();
     }
 
