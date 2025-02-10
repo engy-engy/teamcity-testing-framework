@@ -15,7 +15,7 @@ public class AgentPoolsTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        var response = uncheckedRequests.getRequest(AGENTPOOLS).read("")
+        var response = uncheckedRequests.getRequest(AGENT_POOLS).read("")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().response();
@@ -29,7 +29,7 @@ public class AgentPoolsTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        var response = uncheckedRequests.getRequest(AGENTPOOLS).create(testData.getAgent())
+        var response = uncheckedRequests.getRequest(AGENT_POOLS).create(testData.getAgent())
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().response();
@@ -41,12 +41,12 @@ public class AgentPoolsTest extends BaseApiTest {
     public void userDeleteAgentPoolsTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-        var agent = uncheckedRequests.getRequest(AGENTPOOLS).create(testData.getAgent());
+        var agent = uncheckedRequests.getRequest(AGENT_POOLS).create(testData.getAgent());
 
-        uncheckedRequests.getRequest(AGENTPOOLS).delete("name:" + agent.jsonPath().getString("name"))
+        uncheckedRequests.getRequest(AGENT_POOLS).delete("name:" + agent.jsonPath().getString("name"))
                 .then()
                 .statusCode(HttpStatus.SC_NO_CONTENT);
-        uncheckedRequests.getRequest(AGENTPOOLS).delete("name:" + agent.jsonPath().getString("name"))
+        uncheckedRequests.getRequest(AGENT_POOLS).delete("name:" + agent.jsonPath().getString("name"))
                 .then()
                 .statusCode(HttpStatus.SC_NOT_FOUND);
     }
@@ -55,9 +55,9 @@ public class AgentPoolsTest extends BaseApiTest {
     public void userGetAgentPoolsByLocatorTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-        var agent = uncheckedRequests.getRequest(AGENTPOOLS).create(testData.getAgent());
+        var agent = uncheckedRequests.getRequest(AGENT_POOLS).create(testData.getAgent());
 
-        uncheckedRequests.getRequest(AGENTPOOLS).read("name:" + agent.jsonPath().getString("name"))
+        uncheckedRequests.getRequest(AGENT_POOLS).read("name:" + agent.jsonPath().getString("name"))
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().response();
@@ -69,9 +69,9 @@ public class AgentPoolsTest extends BaseApiTest {
     public void userGetAgentPoolsByLocatorWithFieldTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-        var agent = uncheckedRequests.getRequest(AGENTPOOLS).create("?fields=name", testData.getAgent());
+        var agent = uncheckedRequests.getRequest(AGENT_POOLS).create("?fields=name", testData.getAgent());
 
-        uncheckedRequests.getRequest(AGENTPOOLS).read("name:" + agent.jsonPath().getString("name") + "?fields=name")
+        uncheckedRequests.getRequest(AGENT_POOLS).read("name:" + agent.jsonPath().getString("name") + "?fields=name")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().response();
@@ -83,9 +83,9 @@ public class AgentPoolsTest extends BaseApiTest {
     public void userGetAgentFromAgentPoolWithFieldTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
-        var agent = uncheckedRequests.getRequest(AGENTPOOLS).create(testData.getAgent());
+        var agent = uncheckedRequests.getRequest(AGENT_POOLS).create(testData.getAgent());
 
-        uncheckedRequests.getRequest(AGENTPOOLS).read(
+        uncheckedRequests.getRequest(AGENT_POOLS).read(
                 "name:" + agent.jsonPath().getString("name") + "/agents" + "?fields=name")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
@@ -99,9 +99,9 @@ public class AgentPoolsTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         uncheckedRequests.getRequest(PROJECTS).create(testData.getProject());
-        var agent = uncheckedRequests.getRequest(AGENTPOOLS).create(testData.getAgent());
+        var agent = uncheckedRequests.getRequest(AGENT_POOLS).create(testData.getAgent());
 
-        uncheckedRequests.getRequest(AGENTPOOLS).update(
+        uncheckedRequests.getRequest(AGENT_POOLS).update(
                 "name:" + agent.jsonPath().getString("name") + "/projects", testData.getProject())
                 .then()
                 .statusCode(HttpStatus.SC_OK)
@@ -116,9 +116,9 @@ public class AgentPoolsTest extends BaseApiTest {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
         uncheckedRequests.getRequest(PROJECTS).create(testData.getProject());
-        var agent = uncheckedRequests.getRequest(AGENTPOOLS).create(testData.getAgent());
+        var agent = uncheckedRequests.getRequest(AGENT_POOLS).create(testData.getAgent());
 
-        uncheckedRequests.getRequest(AGENTPOOLS).delete(
+        uncheckedRequests.getRequest(AGENT_POOLS).delete(
                 "name:" + agent.jsonPath().getString("name") + "/projects" + "/name:" + testData.getProject().getName())
                 .then()
                 .statusCode(HttpStatus.SC_NO_CONTENT)
