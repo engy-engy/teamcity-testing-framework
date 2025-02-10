@@ -55,4 +55,19 @@ public class RoleTest extends BaseTest {
         softy.assertThat(response.jsonPath().getString("name")).isEqualTo(role.getName());
     }
 
+    @Test(description = "User should be able create role by field", groups = {"Positive", "CRUD"})
+    public void userCreateRoleByField() {
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        var uncheckedRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+
+        var role = generate(Role.class);
+        role.setRoleId(getString().toLowerCase());
+        role.setScope(getString().toLowerCase());
+        role.setName(getString().toLowerCase());
+
+        var response = uncheckedRequests.getRequest(ROLES).create("?fields=id,name", role);
+
+        softy.assertThat(response.jsonPath().getString("name")).isEqualTo(role.getName());
+    }
+
 }
