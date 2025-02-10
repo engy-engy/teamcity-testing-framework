@@ -19,7 +19,7 @@ public class AuthAgentTest extends BaseApiTest {
     public void setupTeamCityAgentTest() {
         var checkedAgentsRequest = new CheckedAgents(Specifications.superUserSpec());
         var agentId = waitUntilAgentIsFound(checkedAgentsRequest).getId();
-        checkedAgentsRequest.update(agentId, generate(AuthorizedInfo.class));
+        checkedAgentsRequest.update(String.valueOf(agentId), generate(AuthorizedInfo.class));
     }
 
     @Step("Wait until agent is found")

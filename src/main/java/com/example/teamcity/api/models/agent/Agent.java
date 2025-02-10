@@ -1,5 +1,6 @@
 package com.example.teamcity.api.models.agent;
 
+import com.example.teamcity.api.annotations.Random;
 import com.example.teamcity.api.models.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -14,8 +15,9 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Agent extends BaseModel {
 
-    private String id;
-
+    @Random
+    private int id;
+    @Random
     private String name;
 
 }

@@ -18,7 +18,7 @@ import java.util.List;
 public class AgentPool extends BaseModel {
 
     @Random
-    private String id;
+    private int id;
     @Random
     private String name;
     @Parameterizable
