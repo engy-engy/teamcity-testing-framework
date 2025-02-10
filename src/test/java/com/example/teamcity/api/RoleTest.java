@@ -1,16 +1,15 @@
 package com.example.teamcity.api;
 
 import com.example.teamcity.BaseTest;
-import com.example.teamcity.api.generators.RandomData;
-import com.example.teamcity.api.generators.TestDataGenerator;
-import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.models.Role;
+import com.example.teamcity.api.models.Roles;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.spec.Specifications;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.*;
+import static com.example.teamcity.api.enums.Endpoint.ROLES;
+import static com.example.teamcity.api.enums.Endpoint.USERS;
 import static com.example.teamcity.api.generators.RandomData.getString;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
@@ -22,16 +21,23 @@ public class RoleTest extends BaseTest {
     public void userGetRoles() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequest = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-        var response = userCheckRequest.getRequest(ROLES).read("");
-        softy.assertThat(response).isNotNull();
+        var response = userCheckRequest.<Roles>getRequest(ROLES).read("");
+        softy.assertThat(response.getRole())
+                .extracting(Role::getRoleId)
+                .containsAnyOf("SYSTEM_ADMIN", "TOOLS_INTEGRATION", "AGENT_MANAGER", "PROJECT_ADMIN",
+                        "PROJECT_DEVELOPER", "PROJECT_VIEWER");
     }
 
     @Test(description = "User should be able get all roles by fields", groups = {"Positive", "CRUD"})
     public void userGetRolesByField() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequest = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-        var response = userCheckRequest.getRequest(ROLES).read("?fields=role(id,name,included(role(id,name)))");
-        softy.assertThat(response).isNotNull();
+        var response = userCheckRequest.<Roles>getRequest(ROLES).read("?fields=role(name)");
+
+        softy.assertThat(response.getRole())
+                .extracting(Role::getRoleId)
+                .containsAnyOf("SYSTEM_ADMIN", "TOOLS_INTEGRATION", "AGENT_MANAGER", "PROJECT_ADMIN",
+                        "PROJECT_DEVELOPER", "PROJECT_VIEWER");
     }
 
     @Test(description = "User should be able create role", groups = {"Positive", "CRUD"})
