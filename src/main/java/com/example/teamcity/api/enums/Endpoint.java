@@ -4,6 +4,7 @@ import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.models.agent.AgentPool;
 import com.example.teamcity.api.models.agent.AgentType;
 import com.example.teamcity.api.models.agent.Agents;
+import com.example.teamcity.api.models.audit.AuditEvents;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ public enum Endpoint {
     AGENTS("/app/rest/agents", Agents.class),
     AGENT_POOLS("/app/rest/agentPools", AgentPool.class),
     AGENT_TYPE("/app/rest/agentTypes", AgentType.class),
+    AUDIT("/app/rest/audit", AuditEvents.class),
     SERVER("/app/rest/server", Server.class),;
 
     private final String url;
