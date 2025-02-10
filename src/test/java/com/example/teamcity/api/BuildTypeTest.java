@@ -1,6 +1,7 @@
 package com.example.teamcity.api;
 
 import com.example.teamcity.api.generators.RandomData;
+import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.UncheckedRequests;
@@ -53,56 +54,49 @@ public class BuildTypeTest extends BaseApiTest {
     @Test(description = "User should be able get all build types", groups = {"Positive", "CRUD"})
     public void userGetAllBuildTypes() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
         userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
         userCheckRequests.getRequest(BUILD_TYPES).create("fields=name", testData.getBuildType());
 
         var response = userCheckRequests.getRequest(BUILD_TYPES)
-                .read("?name:"+testData.getBuildType().getName())
-                .then().extract().response();
+                .read("?name:"+testData.getBuildType().getName());
         softy.assertThat(response).isNotNull();
     }
 
     @Test(description = "User should be able get all build types with fields", groups = {"Positive", "CRUD"})
     public void userGetAllBuildTypesWithFields() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
         userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
         userCheckRequests.getRequest(BUILD_TYPES).create("fields=name", testData.getBuildType());
 
-        var response = userCheckRequests.getRequest(BUILD_TYPES)
-                .read(testData.getBuildType().getName()+"&fields=name")
-                .then().extract().response();
-        softy.assertThat(response).isNotNull();
+        var response = uncheckedBuildTypeRequest.read("?fields=buildType(name)");
+        softy.assertThat(response.jsonPath().getString("buildType.name"))
+                .containsAnyOf(testData.getBuildType().getName());
     }
 
     @Test(description = "User should be able get all build types not parameters", groups = {"Positive", "CRUD"})
     public void userGetAllBuildTypesNotParameters() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
         userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
         userCheckRequests.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var response = userCheckRequests.getRequest(BUILD_TYPES)
-                .read("")
-                .then().extract().response();
+        var response = userCheckRequests.getRequest(BUILD_TYPES).read("");
         softy.assertThat(response).isNotNull();
     }
 
     @Test(description = "User should be able to create build type with field parameter", groups = {"Positive", "CRUD"})
     public void userCreatesBuildTypeWithFieldParameterTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
-        var userUnCheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser()));
+        var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
+        userCheckRequests.getRequest(PROJECTS).create(testData.getProject());
 
-        userUnCheckRequests.getRequest(PROJECTS).create(testData.getProject());
-
-        var response = userUnCheckRequests.getRequest(BUILD_TYPES).create("?fields=name", testData.getBuildType())
-                .then().assertThat().statusCode(HttpStatus.SC_OK)
-                .extract().response();
-        softy.assertThat(response.jsonPath().getString("name")).isEqualTo(testData.getBuildType().getName());
+        var response = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).create("?fields=name", testData.getBuildType());
+        softy.assertThat(response.getName()).isEqualTo(testData.getBuildType().getName());
     }
 
     @Test(description = "User should be able get build type with fields parameter", groups = {"Positive", "CRUD"})
@@ -171,8 +165,8 @@ public class BuildTypeTest extends BaseApiTest {
 
     @Test(description = "User should not be able to create two build types with the same id", groups = {"CRUD"})
     public void userCreatesTwoBuildTypesWithSameIdTest() {
-        uncheckedSuperUser.getRequest(USERS).create(testData.getUser());
-        uncheckedSuperUser.getRequest(PROJECTS).create(testData.getProject());
+        superUserCheckRequests.getRequest(USERS).create(testData.getUser());
+        superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
 
         checkedBuildTypeRequest.create(testData.getBuildType());
 
@@ -201,9 +195,8 @@ public class BuildTypeTest extends BaseApiTest {
 
         testData.getBuildType().setId(RandomData.getString(BUILD_TYPE_ID_CHARACTERS_LIMIT));
 
-        checkedBuildTypeRequest.create(testData.getBuildType());
-
-        //to do softy
+        var response = checkedBuildTypeRequest.create(testData.getBuildType());
+        softy.assertThat(response).isNotNull();
     }
 
     @Test(description = "Unauthorized user should not be able to create build type", groups = {"CRUD"})
